@@ -11,6 +11,27 @@ registration_repo = RegistrationRepository()
 event_repo = EventRepository()
 
 class AttendeeService:
+    def get_all_attendees(self, user):
+        if user.role != RoleEnum.ADMIN:
+            raise PermissionError("Solo administrador puede ver asistentes")
+        return attendee_repo.get_all()
+
+    def get_attendee_by_id(self, attendee_id, user):
+        if user.role != RoleEnum.ADMIN:
+            raise PermissionError("Solo administrador puede ver asistentes")
+        attendee = attendee_repo.get_by_id(attendee_id)
+        if not attendee:
+            raise ValueError("Asistente no encontrado")
+        return attendee
+
+    def get_attendee_registrations(self, attendee_id, user):
+        if user.role != RoleEnum.ADMIN:
+            raise PermissionError("Solo administrador puede ver inscripciones por asistente")
+        attendee = attendee_repo.get_by_id(attendee_id)
+        if not attendee:
+            raise ValueError("Asistente no encontrado")
+        return registration_repo.get_by_attendee(attendee_id)
+
     def register_to_event(self, event_id, data, user):
         event = event_repo.get_by_id(event_id)
         if not event:

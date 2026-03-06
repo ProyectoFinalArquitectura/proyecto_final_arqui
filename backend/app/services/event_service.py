@@ -10,6 +10,12 @@ class EventService:
             return event_repo.get_all()
         return event_repo.get_by_organizer(user.id)
 
+    def get_active(self):
+        return event_repo.get_active_events()
+
+    def get_by_status(self, status):
+        return event_repo.get_by_status(EventStatusEnum(status))
+
     def get_by_id(self, event_id, user):
         event = event_repo.get_by_id(event_id)
         if not event:
@@ -53,3 +59,8 @@ class EventService:
         event.status = EventStatusEnum(status)
         event_repo.commit()
         return event
+
+    def delete(self, event_id, user):
+        event = self.get_by_id(event_id, user)
+        event_repo.delete(event)
+        return True
