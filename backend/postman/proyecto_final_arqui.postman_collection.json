@@ -1,0 +1,530 @@
+{
+  "info": {
+    "name": "Proyecto Final Arqui - API",
+    "description": "Colección completa de endpoints del backend con casos positivos y negativos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "organizerName", "value": "Organizador Demo" },
+    { "key": "organizerEmail", "value": "" },
+    { "key": "organizerPassword", "value": "organizador123" },
+    { "key": "organizerToken", "value": "" },
+    { "key": "adminEmail", "value": "admin@local.com" },
+    { "key": "adminPassword", "value": "admin123" },
+    { "key": "adminToken", "value": "" },
+    { "key": "eventId", "value": "" },
+    { "key": "attendeeId", "value": "" },
+    { "key": "registrationId", "value": "" },
+    { "key": "attendeeName", "value": "Asistente Demo" },
+    { "key": "attendeeEmail", "value": "" },
+    { "key": "attendeePhone", "value": "3000000000" }
+  ],
+  "item": [
+    {
+      "name": "01 - Auth",
+      "item": [
+        {
+          "name": "Register Organizer",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ts = Date.now();",
+                  "pm.environment.set('organizerEmail', `organizer_${ts}@mail.com`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.test('Tiene data de usuario', function () {",
+                  "  pm.expect(json).to.have.property('data');",
+                  "  pm.expect(json.data).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{organizerName}}\",\n  \"email\": \"{{organizerEmail}}\",\n  \"password\": \"{{organizerPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login Organizer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('organizerToken', json.data.token);",
+                  "pm.test('Guarda organizerToken', function () {",
+                  "  pm.expect(pm.environment.get('organizerToken')).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{organizerEmail}}\",\n  \"password\": \"{{organizerPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('Me retorna usuario', function () {",
+                  "  pm.expect(json).to.have.property('data');",
+                  "  pm.expect(json.data).to.have.property('email');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{organizerToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 (si existe admin)', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('adminToken', json.data.token);",
+                  "pm.test('Guarda adminToken', function () {",
+                  "  pm.expect(pm.environment.get('adminToken')).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Events",
+      "item": [
+        {
+          "name": "Get My Events",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/events", "host": ["{{baseUrl}}"], "path": ["api", "events"] }
+          }
+        },
+        {
+          "name": "Create Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('eventId', json.data.id);",
+                  "pm.test('Guarda eventId', () => pm.expect(pm.environment.get('eventId')).to.exist);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{organizerToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Evento de Arquitectura\",\n  \"description\": \"Prueba API\",\n  \"date\": \"2026-12-15T10:00:00\",\n  \"location\": \"Auditorio Principal\",\n  \"max_capacity\": 150\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/events", "host": ["{{baseUrl}}"], "path": ["api", "events"] }
+          }
+        },
+        {
+          "name": "Get Event By Id",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}"] }
+          }
+        },
+        {
+          "name": "Update Event",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{organizerToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Evento de Arquitectura Actualizado\",\n  \"location\": \"Sala 2\",\n  \"max_capacity\": 180\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}"] }
+          }
+        },
+        {
+          "name": "Get Active Events",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/events/active", "host": ["{{baseUrl}}"], "path": ["api", "events", "active"] }
+          }
+        },
+        {
+          "name": "Get Events By Status ACTIVO",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/events/status/ACTIVO", "host": ["{{baseUrl}}"], "path": ["api", "events", "status", "ACTIVO"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Attendees",
+      "item": [
+        {
+          "name": "Register Attendee To Event",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ts = Date.now();",
+                  "pm.environment.set('attendeeEmail', `attendee_${ts}@mail.com`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('registrationId', json.data.id);",
+                  "pm.environment.set('attendeeId', json.data.attendee_id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{organizerToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{attendeeName}}\",\n  \"email\": \"{{attendeeEmail}}\",\n  \"phone\": \"{{attendeePhone}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/attendees/event/{{eventId}}/register", "host": ["{{baseUrl}}"], "path": ["api", "attendees", "event", "{{eventId}}", "register"] }
+          }
+        },
+        {
+          "name": "Register Same Attendee Again (Expected 400)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{organizerToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{attendeeName}}\",\n  \"email\": \"{{attendeeEmail}}\",\n  \"phone\": \"{{attendeePhone}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/attendees/event/{{eventId}}/register", "host": ["{{baseUrl}}"], "path": ["api", "attendees", "event", "{{eventId}}", "register"] }
+          }
+        },
+        {
+          "name": "Get Event Attendees",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/attendees/event/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["api", "attendees", "event", "{{eventId}}"] }
+          }
+        },
+        {
+          "name": "Cancel Registration",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/attendees/registration/{{registrationId}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "attendees", "registration", "{{registrationId}}", "cancel"] }
+          }
+        },
+        {
+          "name": "Get All Attendees with Organizer Token (Expected 403)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 403', () => pm.response.to.have.status(403));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/attendees", "host": ["{{baseUrl}}"], "path": ["api", "attendees"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Admin",
+      "item": [
+        {
+          "name": "Get Admin Stats",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/stats", "host": ["{{baseUrl}}"], "path": ["api", "admin", "stats"] }
+          }
+        },
+        {
+          "name": "Get Admin Users",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/users", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users"] }
+          }
+        },
+        {
+          "name": "Get Users By Role ORGANIZADOR",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/users/role/ORGANIZADOR", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", "role", "ORGANIZADOR"] }
+          }
+        },
+        {
+          "name": "Get Admin Events",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/events", "host": ["{{baseUrl}}"], "path": ["api", "admin", "events"] }
+          }
+        },
+        {
+          "name": "Get Admin Active Events",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/events/active", "host": ["{{baseUrl}}"], "path": ["api", "admin", "events", "active"] }
+          }
+        },
+        {
+          "name": "Get Admin Events By Status ACTIVO",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/events/status/ACTIVO", "host": ["{{baseUrl}}"], "path": ["api", "admin", "events", "status", "ACTIVO"] }
+          }
+        },
+        {
+          "name": "Get Admin Registrations",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/registrations", "host": ["{{baseUrl}}"], "path": ["api", "admin", "registrations"] }
+          }
+        },
+        {
+          "name": "Get Registrations By Event",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/registrations/event/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["api", "admin", "registrations", "event", "{{eventId}}"] }
+          }
+        },
+        {
+          "name": "Get Registrations By Attendee",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/registrations/attendee/{{attendeeId}}", "host": ["{{baseUrl}}"], "path": ["api", "admin", "registrations", "attendee", "{{attendeeId}}"] }
+          }
+        },
+        {
+          "name": "Change Event Status (Admin)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"FINALIZADO\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Negative Cases",
+      "item": [
+        {
+          "name": "Login Without Password (Expected 400)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{organizerEmail}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Unauthorized Get Events (Expected 401)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 401', () => pm.response.to.have.status(401));"] } }],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/events", "host": ["{{baseUrl}}"], "path": ["api", "events"] }
+          }
+        },
+        {
+          "name": "Admin Endpoint With Organizer Token (Expected 403)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 403', () => pm.response.to.have.status(403));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/stats", "host": ["{{baseUrl}}"], "path": ["api", "admin", "stats"] }
+          }
+        },
+        {
+          "name": "Change Event Status Without status Field (Expected 400)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}", "status"] }
+          }
+        },
+        {
+          "name": "Admin Users By Invalid Role (Expected 400)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/users/role/INVALID_ROLE", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", "role", "INVALID_ROLE"] }
+          }
+        },
+        {
+          "name": "Events By Invalid Status (Expected 400)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/events/status/INVALID_STATUS", "host": ["{{baseUrl}}"], "path": ["api", "events", "status", "INVALID_STATUS"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Cleanup",
+      "item": [
+        {
+          "name": "Delete Event",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{organizerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}

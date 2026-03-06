@@ -51,6 +51,12 @@ pip install -r requirements.txt
 flask db init
 flask db migrate -m "initial migration"
 flask db upgrade
+
+// Alternativamente, si no tienes `flask` en el PATH:
+
+python -m flask --app run.py db init
+python -m flask --app run.py db migrate -m "initial migration"
+python -m flask --app run.py db upgrade
 ```
 
 > Esto crea automáticamente todas las tablas en la base de datos.
