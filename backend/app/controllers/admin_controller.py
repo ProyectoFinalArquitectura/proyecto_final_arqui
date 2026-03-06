@@ -88,3 +88,18 @@ def get_registrations_by_event(event_id):
 def get_registrations_by_attendee(attendee_id):
 	return jsonify({"data": registrations_schema.dump(registration_repo.get_by_attendee(attendee_id))}), 200
 
+@admin_bp.route("/setup", methods=["POST"])
+def create_first_admin():
+    from app.extensions import bcrypt
+    from app.models.user import User
+    from flask import request
+
+    existing_admin = user_repo.get_by_role(RoleEnum.ADMIN)
+    if existing_admin:
+        return jsonify({"error": "Ya existe un administrador"}), 403
+
+    data = request.get_json()
+    hashed_pw = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
+    admin = User(name=data["name"], email=data["email"], password=hashed_pw, role=RoleEnum.ADMIN)
+    user_repo.save(admin)
+    return jsonify({"message": "Administrador creado"}), 201
