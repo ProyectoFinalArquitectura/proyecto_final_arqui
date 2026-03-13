@@ -10,6 +10,8 @@ class EventSchema(Schema):
     status = fields.Method("get_status")
     organizer_id = fields.Int(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+    
     def get_status(self, obj):
         return obj.status.value if obj.status else None
 
