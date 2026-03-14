@@ -1,325 +1,215 @@
--# 💻 Sistema de Gestión de Eventos — Frontend
--
--Frontend del sistema de gestión de eventos desarrollado con **Next.js**, **React** y **TypeScript**.  
--Consume la API REST del backend documentada en `API_DOCUMENTATION.md` y en el PDF de **Sistema de Gestión de Eventos Empresariales**.
--
--Roles soportados en la interfaz:
--
--- **ADMIN**: vista global del sistema, dashboard, gestión de eventos, usuarios y asistentes.
--- **ORGANIZADOR**: panel privado para crear, editar, cancelar y consultar sus propios eventos.
--
-----
--
--## 📋 1. Requisitos previos
--
--Antes de ejecutar el frontend debes tener instalado:
--
--- Node.js **18+ recomendado**
--- npm (incluido con Node)
--- Backend del proyecto corriendo en local:
--
--```text
--http://127.0.0.1:5000/api
--```
--
--> Si el backend corre en otro puerto o máquina, se puede cambiar vía variable de entorno (ver sección 3).
--
-----
--
--## 📁 2. Estructura general relevante
--
--Desde la raíz del repositorio:
--
--```text
--proyecto_final_arqui/
--├─ backend/          # API Flask + PostgreSQL
--├─ frontend/         # Este proyecto Next.js
--│  ├─ app/          # Rutas y layouts (App Router)
--│  ├─ src/
--│  │  ├─ app/       # Varias páginas client-side (auth, organizador)
--│  │  ├─ components # Componentes UI (admin, eventos, layout)
--│  │  ├─ services   # Clientes HTTP hacia la API
--│  │  └─ store      # Store de autenticación
--└─ ...
--```
--
--Rutas principales del frontend:
--
--- `/login` → inicio de sesión (ADMIN / ORGANIZADOR)
--- `/register` → registro de nuevos organizadores
--- `/organizador` → panel de eventos del organizador
--- `/admin` → dashboard general ADMIN
--- `/admin/eventos` → gestión global de eventos
--- `/admin/personas` → gestión de usuarios y asistentes
--
-----
--
--## ⚙️ 3. Configuración de entorno (URL del backend)
--
--El cliente HTTP central está en `src/services/api.ts`.  
--Por defecto usa:
--
--```ts
--const API_BASE_URL =
--  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:5000/api";
--```
--
--Si el backend **NO** corre en `http://127.0.0.1:5000/api`, configurar:
--
--1. Crear un archivo `.env.local` dentro de `frontend/`.
--2. Agregar:
--
--```env
--NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
--```
--
--(o la URL que corresponda).
--
--> Cualquier cambio en `.env.local` requiere reiniciar `npm run dev`.
--
-----
--
--## 🧩 4. Instalación de dependencias
--
--Desde la raíz del proyecto:
--
--```powershell
--cd frontend
--npm install
--```
--
--Esto instala Next.js, React, Tailwind y demás dependencias definidas en `package.json`.
--
-----
--
--## ▶️ 5. Ejecutar el frontend en modo desarrollo
--
--1. Asegúrate de que el **backend** está corriendo correctamente según el README del backend:
--
--   - Flask levantado en `http://127.0.0.1:5000`
--   - Migraciones aplicadas
--   - Usuario `ADMIN` sembrado con `seed_admin.py`
--
--2. Desde `frontend/` ejecutar:
--
--```powershell
--npm run dev
--```
--
--3. Abrir en el navegador:
--
--```text
--http://localhost:3000
--```
--
--Notas:
--
--- La ruta `/` redirige automáticamente a `/login`.
--- Si no hay sesión válida, las pantallas de panel redirigen a login.
--
-----
--
--## 🔐 6. Flujo de autenticación
--
--Los endpoints de autenticación usados (desde el frontend) son:
--
--- `POST /api/auth/register` → crea usuario con rol **ORGANIZADOR**
--- `POST /api/auth/login` → devuelve JWT + datos del usuario
--- `GET /api/auth/me` → verifica el usuario autenticado
--
--El frontend:
--
--- Guarda el token y el usuario en un store de estado (`authStore` en `src/store/authStore.ts`).
--- Usa `authStore.hydrate()` en páginas protegidas para restaurar sesión desde almacenamiento persistente.
--- Redirige según rol:
--  - ADMIN → `/admin`
--  - ORGANIZADOR → `/organizador`
--
-----
--
--## 👤 7. Probar flujo de ORGANIZADOR
--
--### 7.1. Registro de organizador
--
--1. Ir a:
--
--   ```text
--   http://localhost:3000/register
--   ```
--
--2. Completar el formulario:
--
--   - **Username** (nombre del organizador)
--   - **Email**
--   - **Password** (mínimo 6 caracteres)
--
--3. Si el backend responde correctamente:
--
--   - El frontend redirige a `/login?registered=1&email=...`
--   - Muestra un mensaje de “Cuenta creada con éxito” y precarga el email.
--
--### 7.2. Login como organizador
--
--1. Ir a:
--
--   ```text
--   http://localhost:3000/login
--   ```
--
--2. Ingresar email y password registrados.
--3. El frontend:
--
--   - Llama a `POST /api/auth/login`.
--   - Guarda JWT y usuario.
--   - Redirige automáticamente a `/organizador`.
--
--### 7.3. Panel de organizador (`/organizador`)
--
--Elementos principales:
--
--- Tarjetas de resumen:
--  - **Eventos activos**
--  - **Eventos sold out**
--  - **Asistentes registrados** (suma de asistentes en eventos del organizador)
--- Lista de eventos del organizador (ordenados por fecha).
--
--Acciones:
--
--- **Crear evento**:
--  - Botón “Crear evento” → navega a `/organizador/eventos/nuevo`.
--  - Formulario que usa `POST /api/events`.
--  - El `organizer_id` se toma automáticamente desde el token.
--- **Ver detalle de evento**:
--  - Navega a `/organizador/eventos/[eventId]`.
--  - Muestra información del evento y sus inscripciones (usa endpoints de attendees).
--- **Editar evento**:
--  - Desde el detalle, enlace a `/organizador/eventos/[eventId]/editar`.
--  - Llama a `PUT /api/events/{event_id}`.
--  - La API impide editar eventos en estado `CANCELADO`.
--- **Cancelar evento**:
--  - Acción que lanza un `confirm()` en el navegador.
--  - Si se confirma, llama a `PATCH /api/events/{event_id}/cancel`.
--  - Cambia el estado a `CANCELADO` y actualiza la lista.
--- **Cerrar sesión**:
--  - Botón “Cerrar sesión” en la parte superior.
--  - Limpia el store y redirige a `/login`.
--
-----
--
--## 🛡️ 8. Probar flujo de ADMIN
--
--### 8.1. Login como ADMIN
--
--El backend incluye un seeder para crear un administrador:
--
--```text
--email: admin@admin.com
--password: Admin123456
--```
--
--Pasos:
--
--1. Asegurarse de haber ejecutado `seed_admin.py` en `backend/` (ver README del backend).
--2. Ir a:
--
--   ```text
--   http://localhost:3000/login
--   ```
--
--3. Ingresar las credenciales del admin.
--4. Al iniciar sesión, el frontend redirige a `/admin`.
--
--### 8.2. Dashboard admin (`/admin`)
--
--Muestra:
--
--- Métricas globales (desde `GET /api/admin/stats`):
--  - Total de eventos
--  - Total de usuarios
--  - Total de inscripciones
--- Gráfico de crecimiento de eventos (últimos 6 meses aproximados).
--- Distribución de eventos por estado:
--  - ACTIVO / SOLD_OUT / FINALIZADO / CANCELADO
--
--También consulta eventos desde `GET /api/events` para construir las gráficas.
--
--### 8.3. Gestión de eventos (`/admin/eventos`)
--
--Sección para que el admin vea la “lista maestra” de eventos.
--
--Incluye:
--
--- Filtro por estado:
--  - **Todos**, **ACTIVO**, **SOLD_OUT**, **FINALIZADO**, **CANCELADO**
--  - Usa `GET /api/admin/events` y `GET /api/admin/events/status/{status}`.
--- Tabla con:
--  - Título del evento
--  - Organizador
--  - Fecha
--  - Estado actual
--  - Acción de “Ver detalle” (`/admin/eventos/[eventId]`)
--- Cambio de estado manual:
--  - Combo por fila que llama a `PATCH /api/admin/events/{event_id}/status` con el nuevo estado.
--
--### 8.4. Gestión de personas (`/admin/personas`)
--
--Se divide en dos bloques:
--
--- **Usuarios**:
--  - Filtro por rol: **Todos / ADMIN / ORGANIZADOR**
--  - Tabla con usuarios desde `GET /api/admin/users` y `GET /api/admin/users/role/{role}`.
--- **Asistentes**:
--  - Lista de asistentes desde `GET /api/attendees` (endpoint sólo para ADMIN).
--  - Botón “Ver detalle” abre un modal con:
--    - Datos básicos del asistente (nombre, email, teléfono).
--    - Historial de inscripciones del asistente usando:
--      - `GET /api/admin/registrations/attendee/{attendee_id}`
--      - `GET /api/events` para mostrar nombre de eventos.
--
--Casos a probar:
--
--- Asistente sin inscripciones (mensaje apropiado).
--- Asistente con varias inscripciones en diferentes eventos.
--
-----
--
--## 🔄 9. Pruebas integradas recomendadas (FE + BE)
--
--1. **Registro y login de organizador**:
--   - Crear al menos 2 organizadores distintos desde `/register`.
--   - Verificarlos en `/admin/personas` bajo la tabla de usuarios.
--
--2. **Ciclo completo de un evento (organizador)**:
--   - Como organizador, crear un evento.
--   - Registrar asistentes desde el detalle (la UI invoca `POST /api/attendees/event/{event_id}/register`).
--   - Ver cómo cambian:
--     - Cantidad de asistentes
--     - Distribución de estados (cuando llega a capacidad se marca `SOLD_OUT`).
--   - Cancelar el evento y confirmar que:
--     - Su estado pasa a `CANCELADO`.
--     - Ya no acepta nuevas inscripciones.
--
--3. **Visión global como ADMIN**:
--   - Con varios eventos y organizadores creados, loguearse como admin.
--   - Revisar:
--     - Dashboard `/admin`.
--     - Lista maestra `/admin/eventos` y filtro por estado.
--     - Detalles de asistentes e historial en `/admin/personas`.
--
-----
--
--## 🧪 10. Notas para desarrollo
--
--- El proyecto usa **Next.js App Router** (`app/`) y componentes **client-side** (`"use client"` en las páginas con lógica de estado).
--- La comunicación con el backend se centraliza en `src/services/*` usando `apiRequest`:
--  - Manejo de errores con `ApiClientError` (mensaje + código HTTP + errores de campos).
--- El estado de autenticación vive en `src/store/authStore.ts` (Zustand-like), con:
--  - `login`, `register`, `logout`, `hydrate`, etc.
--- Los estilos usan Tailwind y clases personalizadas con variables CSS (`--color-primary`, `--color-accent`, etc.).
--
--Para cualquier cambio de endpoints o estructura de respuestas, revisar primero:
--
--- `backend/API_DOCUMENTATION.md`
--- El PDF de documentación del backend
--
--y ajustar los servicios en `src/services/` para mantener la compatibilidad.
+# Sistema de Gestion de Eventos - Frontend
+
+Aplicacion frontend desarrollada con Next.js, React y TypeScript para el Sistema de Gestion de Eventos.
+
+Roles soportados:
+
+- ADMIN: vista global del sistema, dashboard y gestion de eventos/personas.
+- ORGANIZADOR: panel para crear, editar, cancelar y consultar sus propios eventos.
+
+---
+
+## 1. Quick Start 
+
+Desde la raiz del repositorio ejecuta:
+
+```powershell
+# 1) Backend
+cd backend
+pip install -r requirements.txt
+
+# 2) Migraciones (si aplica en tu entorno)
+flask --app run.py db upgrade
+
+# 3) Seed de usuarios/eventos de desarrollo
+python seed_admin.py
+python seed_events.py
+
+# 4) Levantar backend
+python run.py
+
+# 5) En otra terminal, levantar frontend
+cd ..\frontend
+npm install
+npm run dev
+```
+
+Abrir en navegador:
+
+- Frontend: `http://localhost:3000`
+- API esperada por defecto en el frontend: `http://127.0.0.1:5000/api`
+
+> o segun tu entorno, `5001`
+
+---
+
+## 2. Requisitos previos
+
+- Node.js 18 o superior
+- npm
+- Python 3.12 o superior
+- PostgreSQL corriendo localmente
+- Base de datos accesible para el backend
+
+Configuracion por defecto de base de datos en backend:
+
+`postgresql+psycopg://postgres:root@localhost:5432/eventos_db`
+
+---
+
+## 3. Configuracion de entorno (frontend)
+
+El cliente HTTP central usa esta variable:
+
+```ts
+const API_BASE_URL =
+	process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:5000/api";
+```
+
+Si necesitas override local (por ejemplo backend en 5001), crea `frontend/.env.local`:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:5001/api
+```
+
+Si usas el flujo estandar del equipo, puedes dejar:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:5000/api
+```
+
+> Cada cambio en `.env.local` requiere reiniciar `npm run dev`.
+
+---
+
+## 4. Instalacion y ejecucion
+
+### 4.1 Backend (minimo para que frontend funcione)
+
+1. Instalar dependencias de Python en `backend/`.
+2. Aplicar migraciones.
+3. Ejecutar seeders:
+   - `python seed_admin.py`
+   - `python seed_events.py`
+4. Levantar backend con `python run.py`.
+
+### 4.2 Frontend
+
+En `frontend/`:
+
+```powershell
+npm install
+npm run dev
+```
+
+La app queda en `http://localhost:3000`.
+
+---
+
+## 5. Credenciales de prueba (desarrollo)
+
+### 5.1 Admin
+
+- Email: `admin@admin.com`
+- Password: `Admin123456`
+
+### 5.2 Organizadores
+
+- `christian.renderos@empresa.com`
+- `karla.contreras@empresa.com`
+- `gabriel.martinez@empresa.com`
+- `alejandro.cruz@empresa.com`
+- `lorena.arriola@empresa.com`
+
+Password de todos los organizadores:
+
+- `Organizador123`
+
+> Las cuentas anteriores existen solo si se ejecutaron los seeds de backend (`seed_admin.py` y `seed_events.py`).
+
+---
+
+## 6. Rutas principales del frontend
+
+- `/login`: inicio de sesion (ADMIN u ORGANIZADOR)
+- `/register`: registro de nuevos organizadores
+- `/organizador`: panel del organizador
+- `/admin`: dashboard general ADMIN
+- `/admin/eventos`: gestion global de eventos
+- `/admin/personas`: gestion de usuarios y asistentes
+
+---
+
+## 7. Flujo de autenticacion
+
+Endpoints principales consumidos por frontend:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+
+Comportamiento de la app:
+
+- Guarda token y usuario en el store de autenticacion.
+- Restaura sesion en pantallas protegidas.
+- Redirige por rol:
+  - ADMIN -> `/admin`
+  - ORGANIZADOR -> `/organizador`
+
+---
+
+## 8. Pruebas recomendadas por rol
+
+### 8.1 Organizador
+
+1. Login con una cuenta `@empresa.com`.
+2. Crear evento en `/organizador/eventos/nuevo`.
+3. Ver detalle de evento e inscripciones.
+4. Editar evento en `/organizador/eventos/[eventId]/editar`.
+5. Cancelar evento y validar estado `CANCELADO`.
+
+### 8.2 Admin
+
+1. Login con `admin@admin.com`.
+2. Revisar dashboard en `/admin`.
+3. Probar filtros y cambio de estado en `/admin/eventos`.
+4. Revisar usuarios/asistentes en `/admin/personas`.
+
+---
+
+## 9. Checklist de verificacion rapida
+
+- El login de admin funciona.
+- El login de organizador funciona.
+- Carga el dashboard de admin.
+- Carga el panel de organizador.
+- Se puede crear al menos un evento.
+
+---
+
+## 10. Troubleshooting
+
+1. Error de conexion con API:
+   - Verifica que backend este arriba y que `NEXT_PUBLIC_API_BASE_URL` sea correcta.
+2. Cambiaste `.env.local` y no toma cambios:
+   - Reinicia `npm run dev`.
+3. 401/403 en rutas protegidas:
+   - Cierra sesion e inicia sesion de nuevo para refrescar token.
+4. Puerto 3000 ocupado:
+   - Libera el puerto o ejecuta frontend en otro puerto.
+
+---
+
+## 11. Notas de desarrollo
+
+- El frontend usa App Router en `app/`.
+- Existen carpetas en `src/` para componentes, servicios, hooks y store.
+- La comunicacion con backend se centraliza en `src/services`.
+- Para cambios de API, revisar `backend/API_DOCUMENTATION.md` y ajustar servicios del frontend.
+
+---
+
+## 12. Referencias
+
+- Documentacion API backend: `backend/API_DOCUMENTATION.md`
+- Coleccion Postman: `backend/postman/proyecto_final_arqui.postman_collection.json`
