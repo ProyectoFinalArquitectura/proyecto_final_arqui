@@ -233,15 +233,15 @@ export default function EventDetailPage() {
 
 	if (isLoading) {
 		return (
-			<main className="min-h-screen bg-black px-4 py-8 text-white md:px-8">
-				<div className="mx-auto h-[30rem] w-full max-w-6xl animate-pulse rounded-3xl border border-white/10 bg-[#111111]" />
+			<main className="min-h-screen bg-transparent px-4 py-8 text-white md:px-8">
+				<div className="mx-auto h-[30rem] w-full max-w-6xl animate-pulse rounded-3xl border border-white/20 bg-black/25 backdrop-blur-sm" />
 			</main>
 		);
 	}
 
 	if (!eventData) {
 		return (
-			<main className="min-h-screen bg-black px-4 py-8 text-white md:px-8">
+			<main className="min-h-screen bg-transparent px-4 py-8 text-white md:px-8">
 				<div className="mx-auto w-full max-w-4xl rounded-2xl border border-[var(--color-primary)]/60 bg-[var(--color-primary)]/10 p-6">
 					<p className="text-sm text-white">{pageError ?? "No encontramos el evento solicitado."}</p>
 				</div>
@@ -250,9 +250,9 @@ export default function EventDetailPage() {
 	}
 
 	return (
-		<main className="min-h-screen bg-black px-4 py-8 text-white md:px-8">
+		<main className="min-h-screen bg-transparent px-4 py-8 text-white md:px-8">
 			<div className="mx-auto w-full max-w-6xl space-y-6">
-				<section className="overflow-hidden rounded-3xl border border-white/10 bg-[#111111]">
+				<section className="overflow-hidden rounded-3xl border border-white/20 bg-black/25 backdrop-blur-sm">
 					<div className="relative h-64 w-full md:h-80">
 						<Image src={getEventImage(eventData.id)} alt={eventData.title} fill className="object-cover" />
 						<div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
@@ -264,15 +264,15 @@ export default function EventDetailPage() {
 					</div>
 
 					<div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-3 md:p-8">
-						<div className="rounded-2xl border border-white/10 bg-black/40 p-4">
+						<div className="rounded-2xl border border-white/20 bg-white/5 p-4 backdrop-blur-sm">
 							<p className="text-xs uppercase tracking-[0.12em] text-white/55">Fecha</p>
 							<p className="mt-2 text-sm text-white/90">{formatDate(eventData.date)}</p>
 						</div>
-						<div className="rounded-2xl border border-white/10 bg-black/40 p-4">
+						<div className="rounded-2xl border border-white/20 bg-white/5 p-4 backdrop-blur-sm">
 							<p className="text-xs uppercase tracking-[0.12em] text-white/55">Ubicacion</p>
 							<p className="mt-2 text-sm text-white/90">{eventData.location}</p>
 						</div>
-						<div className="rounded-2xl border border-white/10 bg-black/40 p-4">
+						<div className="rounded-2xl border border-white/20 bg-white/5 p-4 backdrop-blur-sm">
 							<p className="text-xs uppercase tracking-[0.12em] text-white/55">Capacidad</p>
 							<p className="mt-2 text-sm text-white/90">
 								{registrations.length} / {eventData.max_capacity} asistentes
@@ -281,7 +281,7 @@ export default function EventDetailPage() {
 					</div>
 				</section>
 
-				<section className="flex flex-wrap gap-3 rounded-2xl border border-white/10 bg-[#111111]/95 p-4">
+				<section className="flex flex-wrap gap-3 rounded-2xl border border-white/20 bg-black/25 p-4 backdrop-blur-sm">
 					<Link
 						href={`/organizador/eventos/${eventData.id}/editar`}
 						className="rounded-xl border border-[var(--color-secondary)]/60 px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-secondary)] transition-colors duration-300 hover:border-[var(--color-secondary)]"
@@ -316,7 +316,7 @@ export default function EventDetailPage() {
 					</div>
 				) : null}
 
-				<section className="rounded-2xl border border-white/10 bg-[#111111]/95 p-4 md:p-6">
+				<section className="rounded-2xl border border-white/20 bg-black/25 p-4 backdrop-blur-sm md:p-6">
 					<div className="mb-4 flex items-center justify-between">
 						<h2 className="text-xl font-semibold text-white">Lista de asistentes</h2>
 						<span className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/75">
@@ -364,7 +364,7 @@ export default function EventDetailPage() {
 
 					<div className="space-y-3 md:hidden">
 						{registrations.map((registration) => (
-							<div key={registration.id} className="rounded-xl border border-white/10 bg-black/35 p-4">
+							<div key={registration.id} className="rounded-xl border border-white/20 bg-black/20 p-4 backdrop-blur-sm">
 								<p className="text-sm font-semibold text-white">{registration.attendee_name ?? `Asistente #${registration.attendee_id}`}</p>
 								<p className="mt-1 text-xs text-white/70">{registration.attendee_email ?? "No disponible"}</p>
 								<p className="mt-2 text-xs text-white/65">{formatRegistrationDate(registration.registration_date)}</p>
@@ -386,7 +386,7 @@ export default function EventDetailPage() {
 					</div>
 
 					{registrations.length === 0 ? (
-						<div className="rounded-xl border border-dashed border-white/20 bg-black/30 p-6 text-center text-sm text-white/70">
+						<div className="rounded-xl border border-dashed border-white/25 bg-black/20 p-6 text-center text-sm text-white/70 backdrop-blur-sm">
 							No hay asistentes registrados todavia.
 						</div>
 					) : null}
@@ -394,8 +394,8 @@ export default function EventDetailPage() {
 			</div>
 
 			{isModalOpen ? (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4">
-					<div className="w-full max-w-md rounded-2xl border border-white/12 bg-[#111111] p-5 shadow-2xl">
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+					<div className="w-full max-w-md rounded-2xl border border-white/15 bg-black/25 p-5 shadow-2xl backdrop-blur-sm">
 						<div className="mb-4 flex items-start justify-between">
 							<div>
 								<h3 className="text-xl font-semibold text-white">Registrar asistente</h3>
@@ -416,21 +416,21 @@ export default function EventDetailPage() {
 								placeholder="Nombre completo"
 								value={formState.name}
 								onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))}
-								className="h-11 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-sm text-white outline-none focus:border-[var(--color-accent)]"
+								className="h-11 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-sm text-white outline-none focus:border-[var(--color-accent)]"
 							/>
 							<input
 								type="email"
 								placeholder="Email"
 								value={formState.email}
 								onChange={(event) => setFormState((prev) => ({ ...prev, email: event.target.value }))}
-								className="h-11 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-sm text-white outline-none focus:border-[var(--color-accent)]"
+								className="h-11 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-sm text-white outline-none focus:border-[var(--color-accent)]"
 							/>
 							<input
 								type="text"
 								placeholder="Telefono (opcional)"
 								value={formState.phone}
 								onChange={(event) => setFormState((prev) => ({ ...prev, phone: event.target.value }))}
-								className="h-11 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-sm text-white outline-none focus:border-[var(--color-accent)]"
+								className="h-11 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-sm text-white outline-none focus:border-[var(--color-accent)]"
 							/>
 
 							{formError ? (

@@ -7,6 +7,8 @@
   --color-accent: #2ab0a3;
   --color-secondary: #ffe458;
   --color-warm: #fe9a34;
+  --color-primary-fade: rgba(255, 84, 76, 0.35);
+  --color-accent-fade: rgba(42, 176, 163, 0.35);
   --accent-coral: #ff544c;
   --accent-yellow: #ffe458;
   --accent-teal: #2ab0a3;

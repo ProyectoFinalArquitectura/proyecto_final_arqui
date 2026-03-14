@@ -61,7 +61,7 @@ export default function NewEventPage() {
 	};
 
 	return (
-		<main className="min-h-screen bg-black px-4 py-8 text-white md:px-8">
+		<main className="min-h-screen bg-transparent px-4 py-8 text-white md:px-8">
 			<EventForm
 				mode="create"
 				onSubmit={handleSubmit}

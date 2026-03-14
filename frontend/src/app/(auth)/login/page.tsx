@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -111,15 +111,15 @@ export default function LoginPage() {
 	return (
 		<main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black px-4 py-8 text-white md:px-6">
 			<Image
-				src="/assets/images/fondo_login.jpeg"
+				src="/assets/images/fondo%20login%20ultimo.jpg"
 				alt="Fondo decorativo"
 				fill
 				priority
-				className="object-cover opacity-70"
+				className="scale-105 object-cover blur-[2px]"
 			/>
-			<div className="absolute inset-0 bg-black/70" />
+			<div className="absolute inset-0 bg-black/10" />
 
-			<div className="relative w-full max-w-[28rem] rounded-2xl border border-white/10 bg-[#111111]/95 p-6 shadow-2xl transition-all duration-300 md:p-8">
+			<div className="relative w-full max-w-[28rem] rounded-2xl border border-white/15 bg-white/5 p-6 shadow-2xl backdrop-blur-sm transition-all duration-300 md:p-8">
 				<div className="absolute left-[-4rem] top-[-4rem] h-36 w-36 rounded-full bg-[rgba(255,84,76,0.2)] blur-3xl" />
 				<div className="absolute right-4 top-4 h-7 w-7 rounded-full bg-[var(--color-primary)]/95 text-center text-sm font-bold leading-7 text-black">
 					x
@@ -147,7 +147,7 @@ export default function LoginPage() {
 						<label className="block">
 							<span className="mb-2 block text-[0.875rem] font-medium text-white/80">Email Address</span>
 							<input
-								className="h-12 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
+								className="h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
 								type="email"
 								value={formValues.email}
 								onChange={(event) => setFormValues((prev) => ({ ...prev, email: event.target.value }))}
@@ -160,7 +160,7 @@ export default function LoginPage() {
 						<label className="block">
 							<span className="mb-2 block text-[0.875rem] font-medium text-white/80">Password</span>
 							<input
-								className="h-12 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
+								className="h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
 								type="password"
 								value={formValues.password}
 								onChange={(event) => setFormValues((prev) => ({ ...prev, password: event.target.value }))}
@@ -198,4 +198,5 @@ export default function LoginPage() {
 		</main>
 	);
 }
+
 

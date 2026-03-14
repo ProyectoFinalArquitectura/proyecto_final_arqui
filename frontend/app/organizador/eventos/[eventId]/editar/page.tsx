@@ -125,15 +125,15 @@ export default function EditEventPage() {
 
 	if (isLoading) {
 		return (
-			<main className="min-h-screen bg-black px-4 py-8 text-white md:px-8">
-				<div className="mx-auto h-80 w-full max-w-3xl animate-pulse rounded-3xl border border-white/10 bg-[#111111]" />
+			<main className="min-h-screen bg-transparent px-4 py-8 text-white md:px-8">
+				<div className="mx-auto h-80 w-full max-w-3xl animate-pulse rounded-3xl border border-white/20 bg-black/25 backdrop-blur-sm" />
 			</main>
 		);
 	}
 
 	if (!eventData) {
 		return (
-			<main className="min-h-screen bg-black px-4 py-8 text-white md:px-8">
+			<main className="min-h-screen bg-transparent px-4 py-8 text-white md:px-8">
 				<div className="mx-auto w-full max-w-3xl rounded-2xl border border-[var(--color-primary)]/60 bg-[var(--color-primary)]/10 p-6">
 					<p className="text-sm text-white">{error ?? "No encontramos el evento solicitado."}</p>
 				</div>
@@ -142,7 +142,7 @@ export default function EditEventPage() {
 	}
 
 	return (
-		<main className="min-h-screen bg-black px-4 py-8 text-white md:px-8">
+		<main className="min-h-screen bg-transparent px-4 py-8 text-white md:px-8">
 			{eventData.status === "CANCELADO" ? (
 				<div className="mx-auto mb-4 w-full max-w-3xl rounded-2xl border border-[var(--color-secondary)]/60 bg-[var(--color-secondary)]/10 px-4 py-3 text-sm text-white">
 					Este evento esta cancelado y no admite ediciones. Puedes volver o eliminarlo.

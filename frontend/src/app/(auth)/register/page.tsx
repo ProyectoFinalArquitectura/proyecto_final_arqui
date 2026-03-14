@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -134,7 +134,7 @@ export default function RegisterPage() {
 						<label className="block">
 							<span className="mb-2 block text-[0.875rem] font-medium text-white/80">Username</span>
 							<input
-								className="h-12 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
+								className="h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
 								type="text"
 								value={formValues.name}
 								onChange={(event) => setFormValues((prev) => ({ ...prev, name: event.target.value }))}
@@ -147,7 +147,7 @@ export default function RegisterPage() {
 						<label className="block">
 							<span className="mb-2 block text-[0.875rem] font-medium text-white/80">Email Address</span>
 							<input
-								className="h-12 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
+								className="h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
 								type="email"
 								value={formValues.email}
 								onChange={(event) => setFormValues((prev) => ({ ...prev, email: event.target.value }))}
@@ -160,7 +160,7 @@ export default function RegisterPage() {
 						<label className="block">
 							<span className="mb-2 block text-[0.875rem] font-medium text-white/80">Password</span>
 							<input
-								className="h-12 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
+								className="h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-[0.95rem] text-white placeholder:text-white/45 outline-none transition-all duration-300 focus:border-[var(--color-accent)]"
 								type="password"
 								value={formValues.password}
 								onChange={(event) => setFormValues((prev) => ({ ...prev, password: event.target.value }))}
@@ -198,4 +198,5 @@ export default function RegisterPage() {
 		</main>
 	);
 }
+
 

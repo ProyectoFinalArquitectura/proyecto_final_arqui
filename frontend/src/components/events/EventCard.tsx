@@ -45,7 +45,7 @@ export function EventCard({ event, attendeeCount, onCancel }: EventCardProps) {
 	const isActionable = event.status === "ACTIVO" || event.status === "SOLD_OUT";
 
 	return (
-		<article className="group overflow-hidden rounded-2xl border border-white/10 bg-[#111111] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-accent)]/60">
+		<article className="group overflow-hidden rounded-2xl border border-white/20 bg-black/25 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-accent)]/60">
 			<div className="relative h-40 w-full overflow-hidden">
 				<Image
 					src={getEventImage(event)}

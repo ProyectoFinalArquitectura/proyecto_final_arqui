@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { type FormEvent, useMemo, useState } from "react";
 
@@ -111,7 +111,7 @@ export function EventForm({
 	};
 
 	return (
-		<section className="mx-auto w-full max-w-3xl rounded-3xl border border-white/10 bg-[#111111]/95 p-6 shadow-2xl md:p-8">
+		<section className="mx-auto w-full max-w-3xl rounded-3xl border border-white/20 bg-black/25 p-6 shadow-2xl backdrop-blur-sm md:p-8">
 			<div>
 				<p className="text-xs uppercase tracking-[0.22em] text-white/50">Organizador</p>
 				<h1 className="mt-2 text-3xl font-bold text-white">{title}</h1>
@@ -126,7 +126,7 @@ export function EventForm({
 					<input
 						id="event-title"
 						type="text"
-						className="h-12 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
+						className="h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
 						value={state.title}
 						onChange={(inputEvent) => setState((prev) => ({ ...prev, title: inputEvent.target.value }))}
 					/>
@@ -140,7 +140,7 @@ export function EventForm({
 					<textarea
 						id="event-description"
 						rows={4}
-						className="w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 py-3 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
+						className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
 						value={state.description}
 						onChange={(inputEvent) => setState((prev) => ({ ...prev, description: inputEvent.target.value }))}
 					/>
@@ -154,7 +154,7 @@ export function EventForm({
 						<input
 							id="event-date"
 							type="datetime-local"
-							className="h-12 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
+							className="h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
 							value={state.date}
 							onChange={(inputEvent) => setState((prev) => ({ ...prev, date: inputEvent.target.value }))}
 						/>
@@ -169,7 +169,7 @@ export function EventForm({
 							id="event-capacity"
 							type="number"
 							min={1}
-							className="h-12 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
+							className="h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
 							value={state.max_capacity}
 							onChange={(inputEvent) =>
 								setState((prev) => ({ ...prev, max_capacity: inputEvent.target.value }))
@@ -186,7 +186,7 @@ export function EventForm({
 					<input
 						id="event-location"
 						type="text"
-						className="h-12 w-full rounded-xl border border-white/15 bg-[#1A1A1A] px-4 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
+						className="h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-sm text-white outline-none transition-colors duration-300 focus:border-[var(--color-accent)]"
 						value={state.location}
 						onChange={(inputEvent) => setState((prev) => ({ ...prev, location: inputEvent.target.value }))}
 					/>
@@ -229,3 +229,4 @@ export function EventForm({
 		</section>
 	);
 }
+

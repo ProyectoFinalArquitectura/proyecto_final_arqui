@@ -127,9 +127,9 @@ export default function OrganizadorPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black px-4 py-8 text-white md:px-8">
+    <main className="min-h-screen bg-transparent px-4 py-8 text-white md:px-8">
       <div className="mx-auto w-full max-w-7xl space-y-6">
-        <header className="rounded-3xl border border-white/10 bg-[#111111]/95 p-6 md:p-8">
+        <header className="rounded-3xl border border-white/20 bg-black/25 p-6 backdrop-blur-md md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-white/55">Panel privado organizador</p>
@@ -156,15 +156,15 @@ export default function OrganizadorPage() {
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
+            <div className="rounded-2xl border border-white/20 bg-white/5 p-4 backdrop-blur-sm">
               <p className="text-xs uppercase tracking-[0.12em] text-white/55">Eventos activos</p>
               <p className="mt-2 text-2xl font-bold text-[var(--color-accent)]">{summary.active}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
+            <div className="rounded-2xl border border-white/20 bg-white/5 p-4 backdrop-blur-sm">
               <p className="text-xs uppercase tracking-[0.12em] text-white/55">Eventos sold out</p>
               <p className="mt-2 text-2xl font-bold text-[var(--color-secondary)]">{summary.soldOut}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
+            <div className="rounded-2xl border border-white/20 bg-white/5 p-4 backdrop-blur-sm">
               <p className="text-xs uppercase tracking-[0.12em] text-white/55">Asistentes registrados</p>
               <p className="mt-2 text-2xl font-bold text-[var(--color-warm)]">{summary.totalAttendees}</p>
             </div>
@@ -180,7 +180,7 @@ export default function OrganizadorPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="h-72 animate-pulse rounded-2xl border border-white/10 bg-[#111111]" />
+              <div key={index} className="h-72 animate-pulse rounded-2xl border border-white/20 bg-black/25 backdrop-blur-sm" />
             ))}
           </div>
         ) : (

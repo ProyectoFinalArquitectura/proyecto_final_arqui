@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Red_Hat_Display } from "next/font/google";
 
+import { AppChrome } from "@/src/components/layout/AppChrome";
+
 import "./globals.css";
 
 const redHatDisplay = Red_Hat_Display({
@@ -20,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${redHatDisplay.variable} font-app`}>{children}</body>
+      <body className={`${redHatDisplay.variable} font-app`}>
+        <AppChrome>{children}</AppChrome>
+      </body>
     </html>
   );
 }
