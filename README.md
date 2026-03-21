@@ -279,9 +279,16 @@ Si ejecutaste los seeders del backend (`seed_admin.py` y `seed_events.py`):
 
 # 🧪 Tests
 
+Ejecuta los tests del backend desde la carpeta `backend/`:
+
 ```powershell
-pytest tests/
+cd backend
+.\.venv\Scripts\Activate.ps1
+python -m pytest -q
 ```
+
+Documentación detallada de testing:
+- `backend/tests/README.md`
 
 ---
 
