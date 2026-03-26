@@ -4,6 +4,7 @@ class EventSchema(Schema):
     id = fields.Int(dump_only=True)
     title = fields.Str(required=True, validate=validate.Length(min=3, max=200))
     description = fields.Str()
+    image_url = fields.Str(allow_none=True)
     date = fields.DateTime(required=True)
     location = fields.Str(required=True, validate=validate.Length(min=2, max=255))
     max_capacity = fields.Int(required=True, validate=validate.Range(min=1))
@@ -16,6 +17,7 @@ class EventSchema(Schema):
 class EventUpdateSchema(Schema):
     title = fields.Str(validate=validate.Length(min=3, max=200))
     description = fields.Str()
+    image_url = fields.Str(allow_none=True)
     date = fields.DateTime()
     location = fields.Str(validate=validate.Length(min=2, max=255))
     max_capacity = fields.Int(validate=validate.Range(min=1))

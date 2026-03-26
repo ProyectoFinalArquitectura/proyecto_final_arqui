@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import Image from "next/image";
+import { type ChangeEvent, type FormEvent, useMemo, useState } from "react";
 
 import type { Event, EventFormPayload } from "@/src/types/event.types";
 
@@ -18,6 +19,7 @@ interface EventFormProps {
 interface EventFormState {
 	title: string;
 	description: string;
+	image_url: string;
 	date: string;
 	location: string;
 	max_capacity: string;
@@ -37,6 +39,7 @@ function buildInitialState(initialEvent?: Event): EventFormState {
 		return {
 			title: "",
 			description: "",
+			image_url: "",
 			date: "",
 			location: "",
 			max_capacity: "",
@@ -46,10 +49,24 @@ function buildInitialState(initialEvent?: Event): EventFormState {
 	return {
 		title: initialEvent.title,
 		description: initialEvent.description ?? "",
+		image_url: initialEvent.image_url ?? "",
 		date: toLocalInputValue(initialEvent.date),
 		location: initialEvent.location,
 		max_capacity: String(initialEvent.max_capacity),
 	};
+}
+
+function isSupportedImage(file: File): boolean {
+	return ["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type);
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+		reader.onerror = () => reject(new Error("No se pudo leer la imagen"));
+		reader.readAsDataURL(file);
+	});
 }
 
 function validate(state: EventFormState): EventFormErrors {
@@ -87,6 +104,7 @@ export function EventForm({
 }: EventFormProps) {
 	const [state, setState] = useState<EventFormState>(() => buildInitialState(initialEvent));
 	const [errors, setErrors] = useState<EventFormErrors>({});
+	const [imageError, setImageError] = useState<string | null>(null);
 
 	const title = useMemo(() => (mode === "create" ? "Crear nuevo evento" : "Editar evento"), [mode]);
 
@@ -102,12 +120,42 @@ export function EventForm({
 		const payload: EventFormPayload = {
 			title: state.title.trim(),
 			description: state.description.trim(),
+			image_url: state.image_url.trim() || null,
 			date: new Date(state.date).toISOString(),
 			location: state.location.trim(),
 			max_capacity: Number(state.max_capacity),
 		};
 
 		await onSubmit(payload);
+	};
+
+	const handleImageUpload = async (inputEvent: ChangeEvent<HTMLInputElement>) => {
+		const file = inputEvent.target.files?.[0];
+		if (!file) {
+			return;
+		}
+
+		setImageError(null);
+
+		if (!isSupportedImage(file)) {
+			setImageError("Formato no valido. Usa JPG, PNG, WEBP o GIF");
+			inputEvent.target.value = "";
+			return;
+		}
+
+		if (file.size > 3 * 1024 * 1024) {
+			setImageError("La imagen no debe superar 3 MB");
+			inputEvent.target.value = "";
+			return;
+		}
+
+		try {
+			const dataUrl = await fileToDataUrl(file);
+			setState((prev) => ({ ...prev, image_url: dataUrl }));
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "No se pudo cargar la imagen";
+			setImageError(message);
+		}
 	};
 
 	return (
@@ -144,6 +192,41 @@ export function EventForm({
 						value={state.description}
 						onChange={(inputEvent) => setState((prev) => ({ ...prev, description: inputEvent.target.value }))}
 					/>
+				</div>
+
+				<div>
+					<label className="mb-2 block text-sm font-medium text-white/85" htmlFor="event-image">
+						Imagen del evento (opcional)
+					</label>
+					<input
+						id="event-image"
+						type="file"
+						accept="image/png,image/jpeg,image/webp,image/gif"
+						className="block w-full cursor-pointer rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-[var(--color-accent)] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-black"
+						onChange={(inputEvent) => void handleImageUpload(inputEvent)}
+					/>
+					<p className="mt-2 text-xs text-white/60">Si no subes imagen, el evento quedara sin imagen.</p>
+					{imageError ? <p className="mt-2 text-xs text-[var(--color-primary)]">{imageError}</p> : null}
+
+					{state.image_url ? (
+						<div className="mt-3 overflow-hidden rounded-xl border border-white/20">
+							<div className="relative h-40 w-full">
+								<Image src={state.image_url} alt="Vista previa del evento" fill className="object-cover" />
+							</div>
+							<div className="flex justify-end border-t border-white/15 bg-black/20 p-2">
+								<button
+									type="button"
+									onClick={() => {
+										setState((prev) => ({ ...prev, image_url: "" }));
+										setImageError(null);
+									}}
+									className="rounded-lg border border-white/30 px-3 py-1 text-xs font-semibold text-white/85"
+								>
+									Quitar imagen
+								</button>
+							</div>
+						</div>
+					) : null}
 				</div>
 
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">

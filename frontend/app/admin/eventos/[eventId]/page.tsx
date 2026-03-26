@@ -12,24 +12,6 @@ import { authStore } from "@/src/store/authStore";
 import type { Attendee, Registration } from "@/src/types/attendee.types";
 import type { Event, EventStatus } from "@/src/types/event.types";
 
-const EVENT_IMAGES = [
-	"/assets/images/bootcamp_ventas.jpeg",
-	"/assets/images/cena_gala_anual.jpeg",
-	"/assets/images/conferencia_nacional_innovacion.jpeg",
-	"/assets/images/cumbre_sostenibilidad_empresarial.jpeg",
-	"/assets/images/feria_proveedores.jpeg",
-	"/assets/images/lanzamiento_producto.jpeg",
-	"/assets/images/networking.jpeg",
-	"/assets/images/reunion_trimestral_ventas.jpeg",
-	"/assets/images/taller_liderazgo_ejecutivo.jpeg",
-	"/assets/images/webinar.jpeg",
-	"/assets/images/workshop_marketing.jpeg",
-];
-
-function getEventImage(eventId: number) {
-	return EVENT_IMAGES[eventId % EVENT_IMAGES.length];
-}
-
 function formatDate(dateInput: string): string {
 	return new Intl.DateTimeFormat("es-PE", {
 		dateStyle: "full",
@@ -226,12 +208,12 @@ export default function AdminEventDetailPage() {
 	return (
 		<main className="space-y-6">
 			<section className="overflow-hidden rounded-3xl border border-white/20 bg-black/25 backdrop-blur-sm">
-				<div className="relative h-72 w-full">
-					<Image src={getEventImage(eventData.id)} alt={eventData.title} fill className="object-cover" />
+				<div className="relative h-64 w-full sm:h-72">
+					{eventData.image_url ? <Image src={eventData.image_url} alt={eventData.title} fill className="object-cover" /> : null}
 					<div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
 					<div className="absolute bottom-0 left-0 right-0 p-6">
 						<p className="text-xs uppercase tracking-[0.2em] text-white/65">Detalle de Evento (Supervisor)</p>
-						<h1 className="mt-2 text-3xl font-bold">{eventData.title}</h1>
+						<h1 className="mt-2 text-2xl font-bold sm:text-3xl">{eventData.title}</h1>
 						<p className="mt-2 max-w-3xl text-sm text-white/80">{eventData.description || "Sin descripcion"}</p>
 					</div>
 				</div>
@@ -258,7 +240,7 @@ export default function AdminEventDetailPage() {
 						<p className="text-xs uppercase tracking-[0.16em] text-white/55">Status Switcher</p>
 						<p className="mt-1 text-sm text-white/70">Control total del estado operativo del evento.</p>
 					</div>
-					<div className="flex items-center gap-2">
+					<div className="flex flex-wrap items-center gap-2">
 						{(["ACTIVO", "SOLD_OUT", "FINALIZADO", "CANCELADO"] as EventStatus[]).map((status) => (
 							<button
 								key={status}
@@ -286,7 +268,7 @@ export default function AdminEventDetailPage() {
 				) : null}
 
 				<div className="mt-4 flex justify-end">
-					<div className="flex gap-2">
+					<div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
 						<button
 							type="button"
 							onClick={() => {
@@ -312,40 +294,67 @@ export default function AdminEventDetailPage() {
 				{registrations.length === 0 ? (
 					<p className="py-8 text-center text-sm text-[#555555]">No hay inscripciones para este evento.</p>
 				) : (
-					<div className="mt-4 overflow-x-auto">
-						<table className="min-w-full border-collapse text-left text-sm">
-							<thead>
-								<tr className="border-b border-white/10 text-white/60">
-									<th className="px-3 py-3 font-medium">Asistente</th>
-									<th className="px-3 py-3 font-medium">Email</th>
-									<th className="px-3 py-3 font-medium">Estado</th>
-									<th className="px-3 py-3 font-medium">Accion</th>
-								</tr>
-							</thead>
-							<tbody>
-								{registrations.map((registration) => {
-									const attendee = attendeesById[registration.attendee_id];
-									return (
-										<tr key={registration.id} className="border-b border-white/7 text-white/90">
-											<td className="px-3 py-3">{attendee?.name ?? `Asistente #${registration.attendee_id}`}</td>
-											<td className="px-3 py-3">{attendee?.email ?? "No disponible"}</td>
-											<td className="px-3 py-3">{registration.status}</td>
-											<td className="px-3 py-3">
-												<button
-													type="button"
-													onClick={() => void handleCancelRegistration(registration.id)}
-													disabled={registration.status === "CANCELADO"}
-													className="rounded-lg border border-[var(--color-primary)]/60 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-primary)] disabled:opacity-40"
-												>
-													Cancelar
-												</button>
-											</td>
-										</tr>
-									);
-								})}
-							</tbody>
-						</table>
-					</div>
+					<>
+						<div className="mt-4 space-y-3 md:hidden">
+							{registrations.map((registration) => {
+								const attendee = attendeesById[registration.attendee_id];
+								return (
+									<article key={registration.id} className="rounded-xl border border-white/15 bg-black/20 p-4">
+										<p className="text-sm font-semibold text-white">{attendee?.name ?? `Asistente #${registration.attendee_id}`}</p>
+										<p className="mt-1 text-xs text-white/70">{attendee?.email ?? "No disponible"}</p>
+										<div className="mt-3 flex items-center justify-between">
+											<span className="rounded-full border border-white/20 px-2 py-1 text-[10px] uppercase tracking-[0.08em] text-white/80">
+												{registration.status}
+											</span>
+											<button
+												type="button"
+												onClick={() => void handleCancelRegistration(registration.id)}
+												disabled={registration.status === "CANCELADO"}
+												className="rounded-lg border border-[var(--color-primary)]/60 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-primary)] disabled:opacity-40"
+											>
+												Cancelar
+											</button>
+										</div>
+									</article>
+								);
+							})}
+						</div>
+
+						<div className="mt-4 hidden overflow-x-auto md:block">
+							<table className="min-w-full border-collapse text-left text-sm">
+								<thead>
+									<tr className="border-b border-white/10 text-white/60">
+										<th className="px-3 py-3 font-medium">Asistente</th>
+										<th className="px-3 py-3 font-medium">Email</th>
+										<th className="px-3 py-3 font-medium">Estado</th>
+										<th className="px-3 py-3 font-medium">Accion</th>
+									</tr>
+								</thead>
+								<tbody>
+									{registrations.map((registration) => {
+										const attendee = attendeesById[registration.attendee_id];
+										return (
+											<tr key={registration.id} className="border-b border-white/7 text-white/90">
+												<td className="px-3 py-3">{attendee?.name ?? `Asistente #${registration.attendee_id}`}</td>
+												<td className="px-3 py-3">{attendee?.email ?? "No disponible"}</td>
+												<td className="px-3 py-3">{registration.status}</td>
+												<td className="px-3 py-3">
+													<button
+														type="button"
+														onClick={() => void handleCancelRegistration(registration.id)}
+														disabled={registration.status === "CANCELADO"}
+														className="rounded-lg border border-[var(--color-primary)]/60 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-primary)] disabled:opacity-40"
+													>
+														Cancelar
+													</button>
+												</td>
+											</tr>
+										);
+									})}
+								</tbody>
+							</table>
+						</div>
+					</>
 				)}
 			</section>
 

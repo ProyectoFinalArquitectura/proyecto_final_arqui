@@ -11,28 +11,10 @@ import { authStore } from "@/src/store/authStore";
 import type { RegisterAttendeePayload, RegistrationViewModel } from "@/src/types/attendee.types";
 import type { Event } from "@/src/types/event.types";
 
-const EVENT_IMAGES = [
-	"/assets/images/bootcamp_ventas.jpeg",
-	"/assets/images/cena_gala_anual.jpeg",
-	"/assets/images/conferencia_nacional_innovacion.jpeg",
-	"/assets/images/cumbre_sostenibilidad_empresarial.jpeg",
-	"/assets/images/feria_proveedores.jpeg",
-	"/assets/images/lanzamiento_producto.jpeg",
-	"/assets/images/networking.jpeg",
-	"/assets/images/reunion_trimestral_ventas.jpeg",
-	"/assets/images/taller_liderazgo_ejecutivo.jpeg",
-	"/assets/images/webinar.jpeg",
-	"/assets/images/workshop_marketing.jpeg",
-];
-
 interface RegisterFormState {
 	name: string;
 	email: string;
 	phone: string;
-}
-
-function getEventImage(eventId: number): string {
-	return EVENT_IMAGES[eventId % EVENT_IMAGES.length];
 }
 
 function formatDate(dateInput: string): string {
@@ -254,7 +236,7 @@ export default function EventDetailPage() {
 			<div className="mx-auto w-full max-w-6xl space-y-6">
 				<section className="overflow-hidden rounded-3xl border border-white/20 bg-black/25 backdrop-blur-sm">
 					<div className="relative h-64 w-full md:h-80">
-						<Image src={getEventImage(eventData.id)} alt={eventData.title} fill className="object-cover" />
+						{eventData.image_url ? <Image src={eventData.image_url} alt={eventData.title} fill className="object-cover" /> : null}
 						<div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 						<div className="absolute bottom-0 left-0 right-0 p-5 md:p-8">
 							<p className="text-xs uppercase tracking-[0.2em] text-white/70">Detalle del evento</p>

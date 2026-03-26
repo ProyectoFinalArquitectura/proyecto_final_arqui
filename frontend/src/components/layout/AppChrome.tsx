@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 import { authStore, useAuthStore } from "@/src/store/authStore";
@@ -54,12 +54,25 @@ function getRoleLabel(role?: string | null): string {
 	return "INVITADO";
 }
 
+function getHomeRouteByRole(role?: string | null): string {
+	if (role === "ADMIN") {
+		return "/admin";
+	}
+
+	if (role === "ORGANIZADOR") {
+		return "/organizador";
+	}
+
+	return "/";
+}
+
 interface AppChromeProps {
 	children: React.ReactNode;
 }
 
 export function AppChrome({ children }: AppChromeProps) {
 	const pathname = usePathname();
+	const router = useRouter();
 	const role = useAuthStore((state) => state.user?.role ?? null);
 
 	useEffect(() => {
@@ -77,6 +90,10 @@ export function AppChrome({ children }: AppChromeProps) {
 	const pageTitle = getPageTitle(pathname);
 	const roleLabel = getRoleLabel(role);
 
+	const handleGoHome = () => {
+		router.push(getHomeRouteByRole(role));
+	};
+
 	return (
 		<div className="relative isolate min-h-screen text-white">
 			<div
@@ -85,15 +102,20 @@ export function AppChrome({ children }: AppChromeProps) {
 			/>
 
 			<header className="sticky top-0 z-40 border-b border-white/20 bg-black/25 backdrop-blur-md">
-				<div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-4 px-4 py-3 md:px-8">
-					<div className="flex items-center gap-3">
-						<Image src="/assets/logo/logo_vinfinite.png" alt="Vinfinite" width={48} height={48} className="rounded-lg" />
-						<div>
-							<p className="text-xs uppercase tracking-[0.2em] text-white/50">VINFINITE</p>
-							<h1 className="text-lg font-extrabold leading-tight md:text-2xl">{pageTitle}</h1>
+				<div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-4 md:px-8">
+					<button
+						type="button"
+						onClick={handleGoHome}
+						className="flex min-w-0 flex-1 items-center gap-2 rounded-xl p-1 text-left transition-colors hover:bg-white/10 sm:gap-3"
+						aria-label="Ir al inicio"
+					>
+						<Image src="/assets/logo/logo_vinfinite.png" alt="Vinfinite" width={48} height={48} className="h-10 w-10 rounded-lg sm:h-12 sm:w-12" />
+						<div className="min-w-0">
+							<p className="text-[10px] uppercase tracking-[0.14em] text-white/50 sm:text-xs sm:tracking-[0.2em]">VINFINITE</p>
+							<h1 className="truncate text-base font-extrabold leading-tight sm:text-lg md:text-2xl">{pageTitle}</h1>
 						</div>
-					</div>
-					<div className="rounded-full border border-[var(--color-secondary)]/40 bg-[var(--color-secondary)]/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-secondary)] md:px-4 md:py-2">
+					</button>
+					<div className="shrink-0 rounded-full border border-[var(--color-secondary)]/40 bg-[var(--color-secondary)]/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-secondary)] sm:px-3 sm:text-xs md:px-4 md:py-2">
 						{roleLabel}
 					</div>
 				</div>
@@ -102,7 +124,7 @@ export function AppChrome({ children }: AppChromeProps) {
 			<main className="relative z-10">{children}</main>
 
 			<footer className="relative z-10 border-t border-white/20 bg-black/25 px-4 py-6 backdrop-blur-md md:px-8">
-				<div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-5 text-center text-sm text-white/80 md:grid-cols-3">
+				<div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-5 text-center text-sm text-white/80 md:grid-cols-3 md:text-left">
 					<div>
 						<p className="text-xs uppercase tracking-[0.14em] text-white/45">Contacto</p>
 						<p className="mt-2">+503 78894537</p>

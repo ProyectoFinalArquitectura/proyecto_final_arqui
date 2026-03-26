@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { Suspense, type FormEvent, useEffect, useMemo, useState } from "react";
 
 import { authStore, getPostLoginRoute, useAuthStore } from "@/src/store/authStore";
 import { ApiClientError } from "@/src/types/user.types";
@@ -42,7 +42,7 @@ function validateForm(values: LoginFormState): LoginFormErrors {
   return nextErrors;
 }
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const auth = useAuthStore((currentState) => currentState);
@@ -191,6 +191,18 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+function LoginFallback() {
+  return <main className="min-h-screen bg-black" />;
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginPageContent />
+    </Suspense>
   );
 }
 

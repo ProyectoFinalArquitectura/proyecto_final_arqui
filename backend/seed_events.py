@@ -165,6 +165,12 @@ def seed():
         # Crear eventos
         for ev in EVENTS:
             organizer = created_users[ev["organizer_idx"]]
+
+            existing_event = Event.query.filter_by(title=ev["title"]).first()
+            if existing_event:
+                print(f"Evento ya existe: {ev['title']}")
+                continue
+
             event = Event(
                 title=ev["title"],
                 description=ev["description"],

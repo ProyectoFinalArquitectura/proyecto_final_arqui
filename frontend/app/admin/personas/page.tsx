@@ -33,6 +33,7 @@ export default function AdminPeoplePage() {
 	const loadData = useCallback(async () => {
 		const token = authStore.getState().token;
 		if (!token) {
+			setIsLoading(false);
 			return;
 		}
 
@@ -96,12 +97,12 @@ export default function AdminPeoplePage() {
 			) : null}
 
 			<section className="rounded-2xl border border-white/20 bg-black/25 p-5 backdrop-blur-sm">
-				<div className="mb-4 flex flex-wrap items-center gap-3">
+				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
 					<h2 className="text-xl font-semibold">Usuarios</h2>
 					<select
 						value={userFilter}
 						onChange={(event) => setUserFilter(event.target.value as UserFilter)}
-						className="h-10 rounded-xl border border-white/15 bg-white/5 px-3 text-sm text-white outline-none"
+						className="h-10 w-full rounded-xl border border-white/15 bg-white/5 px-3 text-sm text-white outline-none sm:w-auto"
 					>
 						<option value="ALL" className="bg-[#691A59] text-white">Todos</option>
 						<option value="ADMIN" className="bg-[#691A59] text-white">ADMIN</option>
@@ -119,42 +120,61 @@ export default function AdminPeoplePage() {
 				) : attendeeRows.length === 0 ? (
 					<p className="py-8 text-center text-sm text-[#555555]">No hay asistentes registrados.</p>
 				) : (
-					<div className="mt-4 overflow-x-auto">
-						<table className="min-w-full border-collapse text-left text-sm">
-							<thead>
-								<tr className="border-b border-white/10 text-white/60">
-									<th className="px-3 py-3 font-medium">Nombre</th>
-									<th className="px-3 py-3 font-medium">Email</th>
-									<th className="px-3 py-3 font-medium">Telefono</th>
-									<th className="px-3 py-3 font-medium">Accion</th>
-								</tr>
-							</thead>
-							<tbody>
-								{attendeeRows.map((attendee) => (
-									<tr key={attendee.id} className="border-b border-white/7 text-white/90">
-										<td className="px-3 py-3">{attendee.name}</td>
-										<td className="px-3 py-3">{attendee.email}</td>
-										<td className="px-3 py-3">{attendee.phone || "-"}</td>
-										<td className="px-3 py-3">
-											<button
-												type="button"
-												onClick={() => void handleOpenAttendee(attendee)}
-												className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white/90"
-											>
-												Ver detalle
-											</button>
-										</td>
+					<>
+						<div className="mt-4 space-y-3 md:hidden">
+							{attendeeRows.map((attendee) => (
+								<article key={attendee.id} className="rounded-xl border border-white/15 bg-black/20 p-4">
+									<p className="text-sm font-semibold text-white">{attendee.name}</p>
+									<p className="mt-1 text-xs text-white/70">{attendee.email}</p>
+									<p className="mt-1 text-xs text-white/60">{attendee.phone || "-"}</p>
+									<button
+										type="button"
+										onClick={() => void handleOpenAttendee(attendee)}
+										className="mt-3 rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white/90"
+									>
+										Ver detalle
+									</button>
+								</article>
+							))}
+						</div>
+
+						<div className="mt-4 hidden overflow-x-auto md:block">
+							<table className="min-w-full border-collapse text-left text-sm">
+								<thead>
+									<tr className="border-b border-white/10 text-white/60">
+										<th className="px-3 py-3 font-medium">Nombre</th>
+										<th className="px-3 py-3 font-medium">Email</th>
+										<th className="px-3 py-3 font-medium">Telefono</th>
+										<th className="px-3 py-3 font-medium">Accion</th>
 									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
+								</thead>
+								<tbody>
+									{attendeeRows.map((attendee) => (
+										<tr key={attendee.id} className="border-b border-white/7 text-white/90">
+											<td className="px-3 py-3">{attendee.name}</td>
+											<td className="px-3 py-3">{attendee.email}</td>
+											<td className="px-3 py-3">{attendee.phone || "-"}</td>
+											<td className="px-3 py-3">
+												<button
+													type="button"
+													onClick={() => void handleOpenAttendee(attendee)}
+													className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white/90"
+												>
+													Ver detalle
+												</button>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					</>
 				)}
 			</section>
 
 			{selectedAttendee ? (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
-					<div className="w-full max-w-3xl rounded-2xl border border-white/12 bg-[#111111] p-5 shadow-2xl">
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-3 py-4 backdrop-blur-sm sm:px-4">
+					<div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/12 bg-[#111111] p-4 shadow-2xl sm:p-5">
 						<div className="mb-4 flex items-start justify-between">
 							<div>
 								<h3 className="text-xl font-semibold">Detalle de asistente</h3>

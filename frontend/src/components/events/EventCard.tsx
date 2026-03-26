@@ -3,30 +3,12 @@ import Link from "next/link";
 
 import type { Event, EventStatus } from "@/src/types/event.types";
 
-const EVENT_IMAGES = [
-	"/assets/images/bootcamp_ventas.jpeg",
-	"/assets/images/cena_gala_anual.jpeg",
-	"/assets/images/conferencia_nacional_innovacion.jpeg",
-	"/assets/images/cumbre_sostenibilidad_empresarial.jpeg",
-	"/assets/images/feria_proveedores.jpeg",
-	"/assets/images/lanzamiento_producto.jpeg",
-	"/assets/images/networking.jpeg",
-	"/assets/images/reunion_trimestral_ventas.jpeg",
-	"/assets/images/taller_liderazgo_ejecutivo.jpeg",
-	"/assets/images/webinar.jpeg",
-	"/assets/images/workshop_marketing.jpeg",
-];
-
 const STATUS_STYLES: Record<EventStatus, string> = {
 	ACTIVO: "border-[var(--color-accent)]/60 bg-[var(--color-accent)]/15 text-[var(--color-accent)]",
 	SOLD_OUT: "border-[var(--color-secondary)]/60 bg-[var(--color-secondary)]/15 text-[var(--color-secondary)]",
 	FINALIZADO: "border-white/30 bg-white/10 text-white/75",
 	CANCELADO: "border-[var(--color-primary)]/60 bg-[var(--color-primary)]/15 text-[var(--color-primary)]",
 };
-
-function getEventImage(event: Event): string {
-	return EVENT_IMAGES[event.id % EVENT_IMAGES.length];
-}
 
 function formatEventDate(dateInput: string): string {
 	return new Intl.DateTimeFormat("es-PE", {
@@ -47,12 +29,14 @@ export function EventCard({ event, attendeeCount, onCancel }: EventCardProps) {
 	return (
 		<article className="group overflow-hidden rounded-2xl border border-white/20 bg-black/25 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-accent)]/60">
 			<div className="relative h-40 w-full overflow-hidden">
-				<Image
-					src={getEventImage(event)}
-					alt={event.title}
-					fill
-					className="object-cover transition-transform duration-500 group-hover:scale-105"
-				/>
+				{event.image_url ? (
+					<Image
+						src={event.image_url}
+						alt={event.title}
+						fill
+						className="object-cover transition-transform duration-500 group-hover:scale-105"
+					/>
+				) : null}
 				<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 				<span
 					className={`absolute right-3 top-3 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] ${STATUS_STYLES[event.status]}`}

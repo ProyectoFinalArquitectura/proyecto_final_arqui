@@ -76,19 +76,19 @@ export default function AdminEventsPage() {
 
 	return (
 		<main className="space-y-6">
-			<header className="rounded-3xl border border-white/20 bg-black/25 p-6 backdrop-blur-md">
+			<header className="rounded-3xl border border-white/20 bg-black/25 p-5 backdrop-blur-md sm:p-6">
 				<p className="text-xs uppercase tracking-[0.22em] text-white/45">Admin Central / Eventos</p>
-				<h1 className="mt-2 text-3xl font-bold">Lista maestra de eventos</h1>
+				<h1 className="mt-2 text-2xl font-bold sm:text-3xl">Lista maestra de eventos</h1>
 			</header>
 
 			<section className="rounded-2xl border border-white/20 bg-black/25 p-4 backdrop-blur-sm">
-				<div className="mb-4 flex flex-wrap items-center gap-3">
+				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
 					<label className="text-sm text-white/75" htmlFor="status-filter">Filtrar por estado</label>
 					<select
 						id="status-filter"
 						value={filter}
 						onChange={(event) => setFilter(event.target.value as FilterStatus)}
-						className="h-10 rounded-xl border border-white/15 bg-white/5 px-3 text-sm text-white outline-none"
+						className="h-10 w-full rounded-xl border border-white/15 bg-white/5 px-3 text-sm text-white outline-none sm:w-auto"
 					>
 						{STATUS_OPTIONS.map((status) => (
 							<option key={status} value={status} className="bg-[#691A59] text-white">
@@ -109,55 +109,99 @@ export default function AdminEventsPage() {
 				) : events.length === 0 ? (
 					<p className="py-8 text-center text-sm text-[#555555]">No hay eventos para este estado.</p>
 				) : (
-					<div className="overflow-x-auto">
-						<table className="min-w-full border-collapse text-left text-sm">
-							<thead>
-								<tr className="border-b border-white/10 text-white/60">
-									<th className="px-3 py-3 font-medium">Evento</th>
-									<th className="px-3 py-3 font-medium">Organizador</th>
-									<th className="px-3 py-3 font-medium">Fecha</th>
-									<th className="px-3 py-3 font-medium">Estado</th>
-									<th className="px-3 py-3 font-medium">Acciones</th>
-								</tr>
-							</thead>
-							<tbody>
-								{events.map((event) => (
-									<tr key={event.id} className="border-b border-white/7 text-white/90">
-										<td className="px-3 py-3">
-											<p className="font-medium">{event.title}</p>
-											<p className="text-xs text-white/55">{event.location}</p>
-										</td>
-										<td className="px-3 py-3">{usersById[event.organizer_id]?.name ?? `ID ${event.organizer_id}`}</td>
-										<td className="px-3 py-3">{formatDate(event.date)}</td>
-										<td className="px-3 py-3">
-											<select
-												value={event.status}
-												onChange={(changeEvent) =>
-													void handleStatusChange(event.id, changeEvent.target.value as EventStatus)
-												}
-												disabled={updatingEventId === event.id}
-												className="h-9 rounded-lg border border-white/15 bg-white/5 px-2 text-xs text-white outline-none"
-											>
-												{STATUS_OPTIONS.filter((item) => item !== "ALL").map((status) => (
-													<option key={status} value={status} className="bg-[#691A59] text-white">
-														{status.replace("_", " ")}
-													</option>
-												))}
-											</select>
-										</td>
-										<td className="px-3 py-3">
-											<Link
-												href={`/admin/eventos/${event.id}`}
-												className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white/90"
-											>
-												Ver detalle
-											</Link>
-										</td>
+					<>
+						<div className="space-y-3 md:hidden">
+							{events.map((event) => (
+								<article key={event.id} className="rounded-xl border border-white/15 bg-black/20 p-4 backdrop-blur-sm">
+									<div className="flex items-start justify-between gap-3">
+										<div className="min-w-0">
+											<p className="truncate text-sm font-semibold text-white">{event.title}</p>
+											<p className="mt-1 text-xs text-white/70">{event.location}</p>
+											<p className="mt-2 text-[11px] text-white/60">{usersById[event.organizer_id]?.name ?? `ID ${event.organizer_id}`}</p>
+											<p className="mt-1 text-[11px] text-white/60">{formatDate(event.date)}</p>
+										</div>
+										<span className="rounded-full border border-white/20 px-2 py-1 text-[10px] uppercase tracking-[0.08em] text-white/80">
+											{event.status.replace("_", " ")}
+										</span>
+									</div>
+
+									<div className="mt-3 space-y-2">
+										<select
+											value={event.status}
+											onChange={(changeEvent) =>
+												void handleStatusChange(event.id, changeEvent.target.value as EventStatus)
+											}
+											disabled={updatingEventId === event.id}
+											className="h-9 w-full rounded-lg border border-white/15 bg-white/5 px-2 text-xs text-white outline-none"
+										>
+											{STATUS_OPTIONS.filter((item) => item !== "ALL").map((status) => (
+												<option key={status} value={status} className="bg-[#691A59] text-white">
+													{status.replace("_", " ")}
+												</option>
+											))}
+										</select>
+
+										<Link
+											href={`/admin/eventos/${event.id}`}
+											className="inline-flex rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white/90"
+										>
+											Ver detalle
+										</Link>
+									</div>
+								</article>
+							))}
+						</div>
+
+						<div className="hidden overflow-x-auto md:block">
+							<table className="min-w-full border-collapse text-left text-sm">
+								<thead>
+									<tr className="border-b border-white/10 text-white/60">
+										<th className="px-3 py-3 font-medium">Evento</th>
+										<th className="px-3 py-3 font-medium">Organizador</th>
+										<th className="px-3 py-3 font-medium">Fecha</th>
+										<th className="px-3 py-3 font-medium">Estado</th>
+										<th className="px-3 py-3 font-medium">Acciones</th>
 									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
+								</thead>
+								<tbody>
+									{events.map((event) => (
+										<tr key={event.id} className="border-b border-white/7 text-white/90">
+											<td className="px-3 py-3">
+												<p className="font-medium">{event.title}</p>
+												<p className="text-xs text-white/55">{event.location}</p>
+											</td>
+											<td className="px-3 py-3">{usersById[event.organizer_id]?.name ?? `ID ${event.organizer_id}`}</td>
+											<td className="px-3 py-3">{formatDate(event.date)}</td>
+											<td className="px-3 py-3">
+												<select
+													value={event.status}
+													onChange={(changeEvent) =>
+														void handleStatusChange(event.id, changeEvent.target.value as EventStatus)
+													}
+													disabled={updatingEventId === event.id}
+													className="h-9 rounded-lg border border-white/15 bg-white/5 px-2 text-xs text-white outline-none"
+												>
+													{STATUS_OPTIONS.filter((item) => item !== "ALL").map((status) => (
+														<option key={status} value={status} className="bg-[#691A59] text-white">
+															{status.replace("_", " ")}
+														</option>
+													))}
+												</select>
+											</td>
+											<td className="px-3 py-3">
+												<Link
+													href={`/admin/eventos/${event.id}`}
+													className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white/90"
+												>
+													Ver detalle
+												</Link>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					</>
 				)}
 			</section>
 		</main>

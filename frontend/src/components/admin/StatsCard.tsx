@@ -14,14 +14,14 @@ const ACCENT_STYLES: Record<StatsCardProps["accent"], string> = {
 
 export function StatsCard({ title, value, icon, accent }: StatsCardProps) {
 	return (
-		<article className={`rounded-2xl border p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] ${ACCENT_STYLES[accent]}`}>
+		<article className={`rounded-2xl border p-4 shadow-[0_18px_40px_rgba(0,0,0,0.35)] sm:p-5 ${ACCENT_STYLES[accent]}`}>
 			<div className="flex items-center justify-between">
-				<p className="text-xs uppercase tracking-[0.14em] text-white/70">{title}</p>
-				<span className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-current/40 text-xs font-bold">
+				<p className="text-[10px] uppercase tracking-[0.12em] text-white/70 sm:text-xs sm:tracking-[0.14em]">{title}</p>
+				<span className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-current/40 text-[10px] font-bold sm:h-8 sm:w-8 sm:text-xs">
 					{icon}
 				</span>
 			</div>
-			<p className="mt-4 text-4xl font-bold text-white md:text-5xl">{value}</p>
+			<p className="mt-3 text-3xl font-bold text-white sm:mt-4 sm:text-4xl md:text-5xl">{value}</p>
 		</article>
 	);
 }

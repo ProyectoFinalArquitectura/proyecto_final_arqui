@@ -25,8 +25,11 @@ class EventService:
         return event
 
     def create(self, data, user):
+        raw_image_url = data.get("image_url")
+        image_url = raw_image_url.strip() if isinstance(raw_image_url, str) else raw_image_url
         event = Event(
             title=data["title"], description=data.get("description", ""),
+            image_url=image_url or None,
             date=data["date"], location=data["location"],
             max_capacity=data["max_capacity"], organizer_id=user.id
         )
@@ -36,9 +39,12 @@ class EventService:
         event = self.get_by_id(event_id, user)
         if event.status == EventStatusEnum.CANCELADO:
             raise ValueError("No se puede editar un evento cancelado")
-        for field in ["title", "description", "date", "location", "max_capacity"]:
+        for field in ["title", "description", "date", "location", "max_capacity", "image_url"]:
             if field in data:
-                setattr(event, field, data[field])
+                if field == "image_url" and isinstance(data[field], str):
+                    setattr(event, field, data[field].strip() or None)
+                else:
+                    setattr(event, field, data[field])
         event_repo.commit()
         return event
 

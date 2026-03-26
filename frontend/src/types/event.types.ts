@@ -4,6 +4,7 @@ export interface Event {
 	id: number;
 	title: string;
 	description?: string | null;
+	image_url?: string | null;
 	date: string;
 	location: string;
 	max_capacity: number;
@@ -15,6 +16,7 @@ export interface Event {
 export interface EventFormPayload {
 	title: string;
 	description: string;
+	image_url?: string | null;
 	date: string;
 	location: string;
 	max_capacity: number;
@@ -23,6 +25,7 @@ export interface EventFormPayload {
 export interface EventUpdatePayload {
 	title?: string;
 	description?: string;
+	image_url?: string | null;
 	date?: string;
 	location?: string;
 	max_capacity?: number;

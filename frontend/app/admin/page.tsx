@@ -85,9 +85,9 @@ export default function AdminPage() {
 
     return (
       <main className="space-y-6">
-        <header className="rounded-3xl border border-white/20 bg-black/25 p-6 backdrop-blur-md md:p-8">
+        <header className="rounded-3xl border border-white/20 bg-black/25 p-5 backdrop-blur-md md:p-8">
         <p className="text-xs uppercase tracking-[0.22em] text-white/45">Panel Admin / Estadisticas</p>
-        <h1 className="mt-2 text-3xl font-bold md:text-4xl">Vision general del sistema</h1>
+        <h1 className="mt-2 text-2xl font-bold sm:text-3xl md:text-4xl">Vision general del sistema</h1>
         <p className="mt-3 max-w-3xl text-sm text-white/70 md:text-base">
           Monitorea crecimiento, salud operativa y actividad de eventos desde un solo panel global.
         </p>
@@ -99,20 +99,20 @@ export default function AdminPage() {
         </div>
       ) : null}
 
-      <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <section className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-3">
         <StatsCard title="Total eventos" value={safeStats.events} icon="EV" accent="accent" />
         <StatsCard title="Total usuarios" value={safeStats.users} icon="US" accent="secondary" />
         <StatsCard title="Total inscripciones" value={safeStats.registrations} icon="RG" accent="warm" />
       </section>
 
-      <section className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-          <article className="rounded-2xl border border-white/20 bg-black/25 p-5 backdrop-blur-sm">
+      <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <article className="rounded-2xl border border-white/20 bg-black/25 p-4 backdrop-blur-sm sm:p-5">
           <h2 className="text-lg font-semibold">Crecimiento de eventos (ultimos 6 meses)</h2>
           <p className="mt-1 text-sm text-white/65">Placeholder visual usando color warm para tendencia.</p>
           {isLoading ? (
-              <div className="mt-6 h-44 animate-pulse rounded-xl bg-black/20" />
+            <div className="mt-4 h-40 animate-pulse rounded-xl bg-black/20 sm:mt-6 sm:h-44" />
           ) : (
-              <div className="mt-6 flex h-44 items-end gap-3 rounded-xl border border-white/10 bg-black/20 px-4 pb-4 pt-6">
+            <div className="mt-4 flex h-40 items-end gap-2 rounded-xl border border-white/10 bg-black/20 px-3 pb-3 pt-5 sm:mt-6 sm:h-44 sm:gap-3 sm:px-4 sm:pb-4 sm:pt-6">
               {(monthlyGrowth.length ? monthlyGrowth : [0, 0, 0, 0, 0, 0]).map((value, index) => (
                 <div key={index} className="flex flex-1 flex-col items-center justify-end gap-2">
                   <div
@@ -126,10 +126,10 @@ export default function AdminPage() {
           )}
         </article>
 
-          <article className="rounded-2xl border border-white/20 bg-black/25 p-5 backdrop-blur-sm">
+        <article className="rounded-2xl border border-white/20 bg-black/25 p-4 backdrop-blur-sm sm:p-5">
           <h2 className="text-lg font-semibold">Distribucion por estado</h2>
           <p className="mt-1 text-sm text-white/65">Lectura rapida de estado operativo de los eventos.</p>
-          <div className="mt-6 space-y-3">
+          <div className="mt-4 space-y-3 sm:mt-6">
             {Object.entries(statusDistribution).map(([status, count]) => (
                 <div key={status} className="rounded-xl border border-white/10 bg-black/20 p-3">
                 <div className="mb-2 flex items-center justify-between text-xs uppercase tracking-[0.1em] text-white/65">
