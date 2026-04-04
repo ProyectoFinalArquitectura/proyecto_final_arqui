@@ -38,12 +38,13 @@ def test_unit_get_events_json_field_order(client):
 	assert first["id"] == event["id"]
 
 
-def test_unit_get_event_by_id_nonexistent_returns_400(client):
+def test_unit_get_event_by_id_nonexistent_returns_404(client):
 	organizer = register_organizer(client)
 	token = login(client, email=organizer["email"], password="organizador123")
 
 	res = client.get("/api/events/999999", headers=auth_headers(token))
-	assert res.status_code == 400
+	assert res.status_code == 404
+	assert res.get_json()["message"] == "Evento no encontrado"
 
 
 def test_feature_create_event_success_returns_201(client):

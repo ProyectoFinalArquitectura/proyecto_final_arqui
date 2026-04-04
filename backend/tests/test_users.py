@@ -43,12 +43,13 @@ def test_unit_register_password_too_short_returns_400(client):
 	assert res.status_code == 400
 
 
-def test_unit_login_invalid_credentials_returns_400(client):
+def test_unit_login_invalid_credentials_returns_401(client):
 	res = client.post(
 		"/api/auth/login",
 		json={"email": "notfound@mail.com", "password": "wrong"},
 	)
-	assert res.status_code == 400
+	assert res.status_code == 401
+	assert res.get_json()["message"] == "Credenciales invalidas"
 
 
 def test_admin_stats_requires_jwt_returns_401(client):

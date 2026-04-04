@@ -67,14 +67,28 @@ def test_unit_cancel_registration_success_then_not_listed_anymore(client):
 	assert res_list.get_json()["data"] == []
 
 
-def test_unit_cancel_nonexistent_registration_returns_400(client):
+def test_unit_cancel_nonexistent_registration_returns_404(client):
 	org = register_organizer(client, email="att_cancel_missing_org@mail.com")
 	org_token = login(client, email=org["email"], password="organizador123")
 	event = create_event(client, token=org_token)
 
 	# No existe registration_id=999 en BD
 	res_cancel = cancel_registration(client, token=org_token, registration_id=999)
-	assert res_cancel.status_code == 400
+	assert res_cancel.status_code == 404
+	assert res_cancel.get_json()["message"] == "Registro no encontrado"
+
+
+def test_unit_cancel_registration_twice_second_returns_400(client):
+	org = register_organizer(client, email="att_cancel_twice_org@mail.com")
+	org_token = login(client, email=org["email"], password="organizador123")
+	event = create_event(client, token=org_token)
+	res_reg = register_attendee_to_event(client, token=org_token, event_id=event["id"], email="att_cancel_twice@mail.com")
+	reg_id = res_reg.get_json()["data"]["id"]
+	res1 = cancel_registration(client, token=org_token, registration_id=reg_id)
+	assert res1.status_code == 200
+	res2 = cancel_registration(client, token=org_token, registration_id=reg_id)
+	assert res2.status_code == 400
+	assert res2.get_json()["message"] == "La inscripcion ya estaba cancelada"
 
 
 def test_feature_get_all_attendees_for_organizer_is_forbidden_returns_403(client):
