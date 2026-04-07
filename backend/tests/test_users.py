@@ -52,12 +52,12 @@ def test_unit_login_invalid_credentials_returns_401(client):
 	assert res.get_json()["message"] == "Credenciales invalidas"
 
 
-def test_admin_stats_requires_jwt_returns_401(client):
+def test_unit_admin_stats_requires_jwt_returns_401(client):
 	res = client.get("/api/admin/stats")
 	assert res.status_code == 401
 
 
-def test_admin_stats_forbidden_for_organizer_returns_403(client):
+def test_unit_admin_stats_forbidden_for_organizer_returns_403(client):
 	organizer = register_organizer(client)
 	organizer_token = login(client, email=organizer["email"], password="organizador123")
 
@@ -65,7 +65,7 @@ def test_admin_stats_forbidden_for_organizer_returns_403(client):
 	assert res.status_code == 403
 
 
-def test_admin_stats_returns_expected_fields_order(client):
+def test_unit_admin_stats_returns_expected_fields_order(client):
 	admin_token = setup_admin_and_login(client, email="admin_stats@mail.com")
 	organizer = register_organizer(client, email="user_stats@mail.com")
 	organizer_token = login(client, email=organizer["email"], password="organizador123")
@@ -90,7 +90,7 @@ def test_admin_stats_returns_expected_fields_order(client):
 	assert set(payload.keys()) == {"events", "users", "registrations"}
 
 
-def test_admin_users_success_json_order(client):
+def test_unit_admin_users_success_json_order(client):
 	admin_token = setup_admin_and_login(client, email="admin_users@mail.com")
 	organizer = register_organizer(client, email="user1@mail.com")
 	_ = register_organizer(client, email="user2@mail.com")
@@ -102,7 +102,7 @@ def test_admin_users_success_json_order(client):
 	assert set(users[0].keys()) == {"id", "name", "email", "role", "created_at"}
 
 
-def test_missing_endpoints_return_404(client):
+def test_unit_missing_endpoints_return_404(client):
 	# Logout no existe en el backend actual.
 	res_logout = client.post("/api/auth/logout", json={})
 	assert res_logout.status_code == 404

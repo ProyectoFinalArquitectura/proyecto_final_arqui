@@ -11,6 +11,26 @@ Desde `backend/`:
 python -m pytest -q
 ```
 
+### Por tipo de prueba
+
+Las funciones siguen prefijos fijos; `pytest -k` filtra por nombre:
+
+| Tipo | Comando |
+|------|---------|
+| Toda la suite | `python -m pytest -q` |
+| Solo smoke (`test_smoke_*`) | `python -m pytest -q -k "test_smoke_"` |
+| Solo unitarias (`test_unit_*`) | `python -m pytest -q -k "test_unit_"` |
+| Solo feature (`test_feature_*`) | `python -m pytest -q -k "test_feature_"` |
+| Solo integración (`test_integration_*`) | `python -m pytest -q -k "test_integration_"` |
+
+Ejemplo combinando smoke e integración:
+
+```powershell
+python -m pytest -q -k "test_smoke_ or test_integration_"
+```
+
+Los prefijos `test_smoke_`, `test_unit_`, `test_feature_` y `test_integration_` cubren todos los tests de la carpeta.
+
 ## Estructura
 
 - `conftest.py`: configuración compartida y helpers.

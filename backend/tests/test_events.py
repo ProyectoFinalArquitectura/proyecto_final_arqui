@@ -119,7 +119,7 @@ def test_feature_cancel_event_success_and_cancel_again_returns_400(client):
 	assert res2.status_code == 400
 
 
-def test_admin_change_event_status_requires_admin_role_returns_403_for_organizer(client):
+def test_unit_admin_change_event_status_requires_admin_role_returns_403_for_organizer(client):
 	organizer = register_organizer(client)
 	organizer_token = login(client, email=organizer["email"], password="organizador123")
 	event = create_event(client, token=organizer_token)
@@ -128,7 +128,7 @@ def test_admin_change_event_status_requires_admin_role_returns_403_for_organizer
 	assert res.status_code == 403
 
 
-def test_admin_change_event_status_invalid_status_returns_400(client):
+def test_unit_admin_change_event_status_invalid_status_returns_400(client):
 	admin_token = setup_admin_and_login(client, email="admin_invalid_status@mail.com")
 	organizer = register_organizer(client, email="org_invalid_status@mail.com")
 	organizer_token = login(client, email=organizer["email"], password="organizador123")
@@ -138,7 +138,7 @@ def test_admin_change_event_status_invalid_status_returns_400(client):
 	assert res.status_code == 400
 
 
-def test_admin_change_event_status_missing_status_field_returns_400(client):
+def test_unit_admin_change_event_status_missing_status_field_returns_400(client):
 	admin_token = setup_admin_and_login(client, email="admin_missing_status@mail.com")
 	organizer = register_organizer(client, email="org_missing_status@mail.com")
 	organizer_token = login(client, email=organizer["email"], password="organizador123")
@@ -152,7 +152,7 @@ def test_admin_change_event_status_missing_status_field_returns_400(client):
 	assert res.status_code == 400
 
 
-def test_admin_change_event_status_success_persists_for_organizer(client):
+def test_unit_admin_change_event_status_success_persists_for_organizer(client):
 	admin_token = setup_admin_and_login(client, email="admin_success_status@mail.com")
 	organizer = register_organizer(client, email="org_success_status@mail.com")
 	organizer_token = login(client, email=organizer["email"], password="organizador123")
@@ -212,7 +212,7 @@ def test_integration_IT04_cancel_event_then_register_attendee_fails(client):
 		headers=auth_headers(org_token),
 		json={"name": "Asistente IT04", "email": "it04_att@mail.com", "phone": "3000000000"},
 	)
-	# En tu backend, si el evento no está ACTIV0 lanza ValueError -> 400
+	
 	assert res_register.status_code == 400
 
 
