@@ -124,9 +124,62 @@ docker compose down -v
 
 # 🧪 Tests
 
+Las pruebas **no requieren Docker ni PostgreSQL** — usan SQLite en memoria.
+
+## Requisitos previos para las pruebas
+
+- Python 3.12+
+- Entorno virtual activo con dependencias instaladas
+
+## Instalación
+
 ```powershell
-pytest tests/
+cd backend
+
+# Activar entorno virtual
+.venv\Scripts\activate
+
+# Instalar dependencias (incluye pytest)
+pip install -r requirements.txt
 ```
+
+## Correr todas las pruebas
+
+```powershell
+python -m pytest tests/ -v
+```
+
+## Correr por tipo
+
+```powershell
+# Pruebas de humo — verifica que la app levanta y los endpoints existen
+python -m pytest tests/test_smoke.py -v
+
+# Pruebas de usuarios y autenticación
+python -m pytest tests/test_users.py -v
+
+# Pruebas de eventos
+python -m pytest tests/test_events.py -v
+
+# Pruebas de asistentes e inscripciones
+python -m pytest tests/test_attendees.py -v
+```
+
+## Correr sin warnings
+
+```powershell
+python -m pytest tests/ -v -W ignore
+```
+
+## Resumen de pruebas
+
+| Archivo | Tipo | Tests |
+|---|---|---|
+| `test_smoke.py` | Humo | 9 |
+| `test_users.py` | Unitarias + Integración | 14 |
+| `test_events.py` | Unitarias + Integración | 22 |
+| `test_attendees.py` | Integración | 11 |
+| **Total** | | **66** |
 
 ---
 
