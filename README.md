@@ -124,9 +124,58 @@ docker compose down -v
 
 # 🧪 Tests
 
+Las pruebas del backend están en `backend/tests/` y se ejecutan con **pytest**. Usan **SQLite en memoria** (`TestingConfig` en `conftest.py`): no necesitas PostgreSQL ni el archivo `.env` para correrlas.
+
+## Tipos de prueba (convención de nombres)
+
+| Tipo | Prefijo en el nombre de la función | Qué comprueba |
+|------|--------------------------------------|----------------|
+| **Smoke** | `test_smoke_` | Que lo esencial responde: registro/login, JWT, códigos básicos (p. ej. 401 sin token). |
+| **Unitarias** | `test_unit_` | Validaciones, permisos, admin, endpoints ausentes (404) y errores esperados por regla. |
+| **Feature** | `test_feature_` | Casos “happy path” de funcionalidad concreta (crear/editar/cancelar evento, etc.). |
+| **Integración** | `test_integration_` | Flujos que encadenan varios pasos (auth → crear recurso → listar/actualizar, admin + eventos + asistentes, etc.). |
+
+Los cuatro prefijos anteriores cubren **toda** la suite. Si usas un solo `-k`, solo corre ese grupo; la suite completa es sin `-k` o combinando prefijos con `or`.
+
+Los archivos son `test_users.py`, `test_events.py` y `test_attendees.py`. Más detalle en `backend/tests/README.md`.
+
+## Cómo ejecutar (desde `backend/`)
+
+Activa el entorno virtual e instala dependencias si aún no lo hiciste (`pip install -r requirements.txt`).
+
+**Toda la suite:**
+
 ```powershell
-pytest tests/
+cd backend
+.\.venv\Scripts\Activate.ps1
+python -m pytest -q
 ```
+
+**Solo smoke:**
+
+```powershell
+python -m pytest -q -k "test_smoke_"
+```
+
+**Solo unitarias:**
+
+```powershell
+python -m pytest -q -k "test_unit_"
+```
+
+**Solo integración:**
+
+```powershell
+python -m pytest -q -k "test_integration_"
+```
+
+**Solo feature** (happy paths nombrados con `test_feature_`):
+
+```powershell
+python -m pytest -q -k "test_feature_"
+```
+
+El filtro `-k` coincide con el prefijo del nombre de cada función de test. Si ejecutas varios tipos a la vez, puedes combinar expresiones, por ejemplo: `-k "test_smoke_ or test_integration_"`.
 
 ---
 

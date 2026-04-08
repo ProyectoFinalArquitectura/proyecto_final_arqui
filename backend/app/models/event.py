@@ -1,5 +1,5 @@
 from app.extensions import db
-from datetime import datetime
+from datetime import datetime, timezone
 import enum
 
 class EventStatusEnum(str, enum.Enum):
@@ -32,5 +32,5 @@ class Event(db.Model):
             self.status = EventStatusEnum.SOLD_OUT
 
     def check_finished(self):
-        if self.date < datetime.utcnow() and self.status == EventStatusEnum.ACTIVO:
+        if self.date < datetime.now(timezone.utc) and self.status == EventStatusEnum.ACTIVO:
             self.status = EventStatusEnum.FINALIZADO
