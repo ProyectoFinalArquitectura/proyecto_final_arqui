@@ -66,6 +66,30 @@ class EventService:
         event_repo.commit()
         return event
 
+    def finish(self, event_id, user):
+        event = self.get_by_id(event_id, user)
+        if event.status not in (EventStatusEnum.ACTIVO, EventStatusEnum.SOLD_OUT):
+            raise ValueError("Solo se puede finalizar un evento activo o sold out")
+        event.status = EventStatusEnum.FINALIZADO
+        event_repo.commit()
+        return event
+
+    def reactivate(self, event_id, user):
+        event = self.get_by_id(event_id, user)
+        if event.status != EventStatusEnum.FINALIZADO:
+            raise ValueError("Solo se puede reactivar un evento finalizado")
+        event.status = EventStatusEnum.ACTIVO
+        event_repo.commit()
+        return event
+
+    def uncancel(self, event_id, user):
+        event = self.get_by_id(event_id, user)
+        if event.status != EventStatusEnum.CANCELADO:
+            raise ValueError("El evento no esta cancelado")
+        event.status = EventStatusEnum.ACTIVO
+        event_repo.commit()
+        return event
+
     def delete(self, event_id, user):
         event = self.get_by_id(event_id, user)
         event_repo.delete(event)

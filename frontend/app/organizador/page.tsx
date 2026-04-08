@@ -21,6 +21,9 @@ export default function OrganizadorPage() {
   const [countsByEventId, setCountsByEventId] = useState<Record<number, number>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isCanceling, setIsCanceling] = useState<number | null>(null);
+  const [isUncanceling, setIsUncanceling] = useState<number | null>(null);
+  const [isFinishing, setIsFinishing] = useState<number | null>(null);
+  const [isReactivating, setIsReactivating] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const summary = useMemo(() => {
@@ -126,6 +129,71 @@ export default function OrganizadorPage() {
     }
   };
 
+  const handleFinishEvent = async (eventId: number) => {
+    const token = authStore.getState().token;
+    if (!token) return;
+
+    const shouldFinish = window.confirm("Marcaras este evento como FINALIZADO. Deseas continuar?");
+    if (!shouldFinish) return;
+
+    setIsFinishing(eventId);
+    setError(null);
+    try {
+      const updated = await eventService.finishEvent(eventId, token);
+      setEvents((prev) => prev.map((event) => (event.id === eventId ? updated : event)));
+    } catch (finishError) {
+      const message = finishError instanceof Error ? finishError.message : "No se pudo finalizar el evento";
+      setError(message);
+    } finally {
+      setIsFinishing(null);
+    }
+  };
+
+  const handleReactivateEvent = async (eventId: number) => {
+    const token = authStore.getState().token;
+    if (!token) return;
+
+    const shouldReactivate = window.confirm("El evento volvera a estado ACTIVO. Deseas continuar?");
+    if (!shouldReactivate) return;
+
+    setIsReactivating(eventId);
+    setError(null);
+    try {
+      const updated = await eventService.reactivateEvent(eventId, token);
+      setEvents((prev) => prev.map((event) => (event.id === eventId ? updated : event)));
+    } catch (reactivateError) {
+      const message = reactivateError instanceof Error ? reactivateError.message : "No se pudo reactivar el evento";
+      setError(message);
+    } finally {
+      setIsReactivating(null);
+    }
+  };
+
+  const handleUncancelEvent = async (eventId: number) => {
+    const token = authStore.getState().token;
+    if (!token) {
+      return;
+    }
+
+    const shouldUncancel = window.confirm("Esta accion reactivara el evento a estado ACTIVO. Deseas continuar?");
+    if (!shouldUncancel) {
+      return;
+    }
+
+    setIsUncanceling(eventId);
+    setError(null);
+
+    try {
+      const updated = await eventService.uncancelEvent(eventId, token);
+      setEvents((prev) => prev.map((event) => (event.id === eventId ? updated : event)));
+    } catch (uncancelError) {
+      const message = uncancelError instanceof Error ? uncancelError.message : "No se pudo reactivar el evento";
+      setError(message);
+    } finally {
+      setIsUncanceling(null);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-transparent px-4 py-8 text-white md:px-8">
       <div className="mx-auto w-full max-w-7xl space-y-6">
@@ -188,6 +256,9 @@ export default function OrganizadorPage() {
             events={events}
             countsByEventId={countsByEventId}
             onCancelEvent={isCanceling ? undefined : handleCancelEvent}
+            onUncancelEvent={isUncanceling ? undefined : handleUncancelEvent}
+            onFinishEvent={isFinishing ? undefined : handleFinishEvent}
+            onReactivateEvent={isReactivating ? undefined : handleReactivateEvent}
           />
         )}
       </div>

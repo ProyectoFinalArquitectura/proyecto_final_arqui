@@ -6,9 +6,12 @@ interface EventListProps {
 	events: Event[];
 	countsByEventId: Record<number, number>;
 	onCancelEvent?: (eventId: number) => void;
+	onUncancelEvent?: (eventId: number) => void;
+	onFinishEvent?: (eventId: number) => void;
+	onReactivateEvent?: (eventId: number) => void;
 }
 
-export function EventList({ events, countsByEventId, onCancelEvent }: EventListProps) {
+export function EventList({ events, countsByEventId, onCancelEvent, onUncancelEvent, onFinishEvent, onReactivateEvent }: EventListProps) {
 	if (events.length === 0) {
 		return (
 			<div className="rounded-2xl border border-dashed border-white/25 bg-black/25 p-8 text-center backdrop-blur-sm">
@@ -28,6 +31,9 @@ export function EventList({ events, countsByEventId, onCancelEvent }: EventListP
 					event={event}
 					attendeeCount={countsByEventId[event.id] ?? 0}
 					onCancel={onCancelEvent}
+					onUncancel={onUncancelEvent}
+					onFinish={onFinishEvent}
+					onReactivate={onReactivateEvent}
 				/>
 			))}
 		</div>

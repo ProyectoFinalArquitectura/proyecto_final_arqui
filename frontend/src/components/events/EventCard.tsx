@@ -21,9 +21,12 @@ interface EventCardProps {
 	event: Event;
 	attendeeCount: number;
 	onCancel?: (eventId: number) => void;
+	onUncancel?: (eventId: number) => void;
+	onFinish?: (eventId: number) => void;
+	onReactivate?: (eventId: number) => void;
 }
 
-export function EventCard({ event, attendeeCount, onCancel }: EventCardProps) {
+export function EventCard({ event, attendeeCount, onCancel, onUncancel, onFinish, onReactivate }: EventCardProps) {
 	const isActionable = event.status === "ACTIVO" || event.status === "SOLD_OUT";
 
 	return (
@@ -79,6 +82,33 @@ export function EventCard({ event, attendeeCount, onCancel }: EventCardProps) {
 							className="rounded-xl border border-[var(--color-primary)]/60 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-primary)] transition-colors duration-300 hover:border-[var(--color-primary)]"
 						>
 							Cancelar
+						</button>
+					) : null}
+					{isActionable && onFinish ? (
+						<button
+							type="button"
+							onClick={() => onFinish(event.id)}
+							className="rounded-xl border border-white/30 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white/75 transition-colors duration-300 hover:border-white/60"
+						>
+							Finalizar
+						</button>
+					) : null}
+					{event.status === "FINALIZADO" && onReactivate ? (
+						<button
+							type="button"
+							onClick={() => onReactivate(event.id)}
+							className="rounded-xl border border-[var(--color-accent)]/60 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-accent)] transition-colors duration-300 hover:border-[var(--color-accent)]"
+						>
+							Reactivar
+						</button>
+					) : null}
+					{event.status === "CANCELADO" && onUncancel ? (
+						<button
+							type="button"
+							onClick={() => onUncancel(event.id)}
+							className="rounded-xl border border-[var(--color-accent)]/60 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-accent)] transition-colors duration-300 hover:border-[var(--color-accent)]"
+						>
+							Restaurar
 						</button>
 					) : null}
 				</div>

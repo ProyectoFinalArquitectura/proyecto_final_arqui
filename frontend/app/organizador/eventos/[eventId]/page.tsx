@@ -141,6 +141,64 @@ export default function EventDetailPage() {
 		}
 	};
 
+	const handleFinishEvent = async () => {
+		if (!eventData) return;
+		const token = authStore.getState().token;
+		if (!token) return;
+
+		const shouldFinish = window.confirm("Marcaras este evento como FINALIZADO. Deseas continuar?");
+		if (!shouldFinish) return;
+
+		setPageError(null);
+		try {
+			setEventData(await eventService.finishEvent(eventData.id, token));
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "No se pudo finalizar el evento";
+			setPageError(message);
+		}
+	};
+
+	const handleReactivateEvent = async () => {
+		if (!eventData) return;
+		const token = authStore.getState().token;
+		if (!token) return;
+
+		const shouldReactivate = window.confirm("El evento volvera a estado ACTIVO. Deseas continuar?");
+		if (!shouldReactivate) return;
+
+		setPageError(null);
+		try {
+			setEventData(await eventService.reactivateEvent(eventData.id, token));
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "No se pudo reactivar el evento";
+			setPageError(message);
+		}
+	};
+
+	const handleUncancelEvent = async () => {
+		if (!eventData) {
+			return;
+		}
+
+		const token = authStore.getState().token;
+		if (!token) {
+			return;
+		}
+
+		const shouldUncancel = window.confirm("El evento volvera a estado ACTIVO. Deseas continuar?");
+		if (!shouldUncancel) {
+			return;
+		}
+
+		setPageError(null);
+		try {
+			setEventData(await eventService.uncancelEvent(eventData.id, token));
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "No se pudo reactivar el evento";
+			setPageError(message);
+		}
+	};
+
 	const handleCancelRegistration = async (registrationId: number) => {
 		const token = authStore.getState().token;
 		if (!token) {
@@ -270,13 +328,40 @@ export default function EventDetailPage() {
 					>
 						Editar evento
 					</Link>
-					<button
-						type="button"
-						onClick={handleCancelEvent}
-						className="rounded-xl border border-[var(--color-primary)]/60 px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-primary)] transition-colors duration-300 hover:border-[var(--color-primary)]"
-					>
-						Cancelar evento
-					</button>
+					{eventData.status === "CANCELADO" ? (
+						<button
+							type="button"
+							onClick={handleUncancelEvent}
+							className="rounded-xl border border-[var(--color-accent)]/60 px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-accent)] transition-colors duration-300 hover:border-[var(--color-accent)]"
+						>
+							Restaurar evento
+						</button>
+					) : eventData.status === "FINALIZADO" ? (
+						<button
+							type="button"
+							onClick={handleReactivateEvent}
+							className="rounded-xl border border-[var(--color-accent)]/60 px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-accent)] transition-colors duration-300 hover:border-[var(--color-accent)]"
+						>
+							Reactivar evento
+						</button>
+					) : (
+						<>
+							<button
+								type="button"
+								onClick={handleFinishEvent}
+								className="rounded-xl border border-white/30 px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-white/75 transition-colors duration-300 hover:border-white/60"
+							>
+								Finalizar evento
+							</button>
+							<button
+								type="button"
+								onClick={handleCancelEvent}
+								className="rounded-xl border border-[var(--color-primary)]/60 px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-primary)] transition-colors duration-300 hover:border-[var(--color-primary)]"
+							>
+								Cancelar evento
+							</button>
+						</>
+					)}
 					<button
 						type="button"
 						onClick={() => setIsModalOpen(true)}

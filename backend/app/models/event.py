@@ -21,7 +21,7 @@ class Event(db.Model):
     organizer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    registrations = db.relationship("Registration", backref="event", lazy=True)
+    registrations = db.relationship("Registration", backref="event", lazy=True, cascade="all, delete-orphan")
 
     def is_active(self):
         return self.status == EventStatusEnum.ACTIVO

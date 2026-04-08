@@ -49,6 +49,31 @@ export const eventService = {
 		return response.data;
 	},
 
+	async finishEvent(eventId: number, token: string): Promise<Event> {
+		const response = await apiRequest<Event>(`/events/${eventId}/finish`, {
+			method: "PATCH",
+			token,
+		});
+		return response.data;
+	},
+
+	async reactivateEvent(eventId: number, token: string): Promise<Event> {
+		const response = await apiRequest<Event>(`/events/${eventId}/reactivate`, {
+			method: "PATCH",
+			token,
+		});
+		return response.data;
+	},
+
+	async uncancelEvent(eventId: number, token: string): Promise<Event> {
+		const response = await apiRequest<Event>(`/events/${eventId}/uncancel`, {
+			method: "PATCH",
+			token,
+		});
+
+		return response.data;
+	},
+
 	async deleteEvent(eventId: number, token: string): Promise<void> {
 		await apiRequest<null>(`/events/${eventId}`, {
 			method: "DELETE",

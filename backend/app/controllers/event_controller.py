@@ -68,6 +68,30 @@ def cancel_event(event_id):
 	return jsonify({"message": "Evento cancelado", "data": event_schema.dump(event)}), 200
 
 
+@event_bp.patch("/<int:event_id>/finish")
+@token_required
+def finish_event(event_id):
+    user = get_current_user()
+    event = event_service.finish(event_id, user)
+    return jsonify({"message": "Evento finalizado", "data": event_schema.dump(event)}), 200
+
+
+@event_bp.patch("/<int:event_id>/reactivate")
+@token_required
+def reactivate_event(event_id):
+    user = get_current_user()
+    event = event_service.reactivate(event_id, user)
+    return jsonify({"message": "Evento reactivado", "data": event_schema.dump(event)}), 200
+
+
+@event_bp.patch("/<int:event_id>/uncancel")
+@token_required
+def uncancel_event(event_id):
+    user = get_current_user()
+    event = event_service.uncancel(event_id, user)
+    return jsonify({"message": "Evento reactivado", "data": event_schema.dump(event)}), 200
+
+
 @event_bp.patch("/<int:event_id>/status")
 @admin_required
 def change_event_status(event_id):
